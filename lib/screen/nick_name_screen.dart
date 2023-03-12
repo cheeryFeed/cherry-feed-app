@@ -1,4 +1,4 @@
-import 'package:cherry_feed/appbar/customAppBar.dart';
+import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
 import 'package:cherry_feed/screen/birth_day_screen.dart';
 import 'package:cherry_feed/textEdit/text_edit.dart';
@@ -25,7 +25,7 @@ class _NickNameScreenState extends State<NickNameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xffFAFAFA),
       appBar: const CustomAppBar(
         isShow: true,
       ),
@@ -59,6 +59,8 @@ class _NickNameScreenState extends State<NickNameScreen> {
             ),
             SizedBox(
               child: TextEdit(
+                enabled:true,
+                textHint: '최대 12자 작성',
                 controller: controller,
                 onChange: _onTextChanged,
               ),
@@ -87,6 +89,7 @@ class _NickNameScreenState extends State<NickNameScreen> {
             Padding(
               padding: const EdgeInsets.only(bottom: 40),
               child: NextButton(
+                isHalf: false,
                 text: '다음',
                 onPressed: onPressed,
               ),

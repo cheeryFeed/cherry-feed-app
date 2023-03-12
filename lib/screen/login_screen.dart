@@ -1,4 +1,4 @@
-import 'package:cherry_feed/appbar/customAppBar.dart';
+import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/social_button.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +8,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xffFAFAFA),
       appBar: const CustomAppBar(
         isShow: false,
       ),

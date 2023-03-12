@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 class NextButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
-  const NextButton({Key? key, required this.text, required this.onPressed}) : super(key: key);
+  final bool isHalf;
+  const NextButton({Key? key, required this.text, required this.onPressed, required this.isHalf}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double height = 64;
+    if(isHalf) {
+      width = width / 2;
+    }
+    double height = MediaQuery.of(context).size.height / 15;
     return ElevatedButton(
       onPressed: onPressed,
       style: ButtonStyle(

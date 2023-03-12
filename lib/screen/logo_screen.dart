@@ -1,4 +1,4 @@
-import 'package:cherry_feed/appbar/customAppBar.dart';
+import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/screen/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +10,7 @@ class LogoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return
       Scaffold(
-      backgroundColor: Colors.white,
+        backgroundColor: Color(0xffFAFAFA),
       appBar: const CustomAppBar(isShow: false,),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),

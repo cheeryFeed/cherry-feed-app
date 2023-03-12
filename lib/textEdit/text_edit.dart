@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 class TextEdit extends StatelessWidget {
   final TextEditingController controller;
   final Function(String) onChange;
+  final String textHint;
+  final bool enabled;
 
-  const TextEdit({Key? key, required this.controller, required this.onChange})
+  const TextEdit({Key? key, required this.controller, required this.onChange, required this.textHint, required this.enabled})
       : super(key: key);
 
   @override
@@ -16,6 +18,7 @@ class TextEdit extends StatelessWidget {
           onChange(value);
         }
       },
+      enabled:enabled ,
       cursorColor: Color(0xff202020),
       decoration: InputDecoration(
         focusedBorder: UnderlineInputBorder(
@@ -28,7 +31,7 @@ class TextEdit extends StatelessWidget {
             color: const Color(0xff202020),
           ),
         ),
-        hintText: '최대 12자 작성',
+        hintText: textHint,
         hintStyle: Theme.of(context).textTheme.bodyText2?.copyWith(
               color: Color(0xffABAFB2),
             ),
