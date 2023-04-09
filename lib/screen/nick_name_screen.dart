@@ -1,7 +1,7 @@
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
 import 'package:cherry_feed/screen/birth_day_screen.dart';
-import 'package:cherry_feed/textEdit/text_edit.dart';
+import 'package:cherry_feed/text_edit/text_edit.dart';
 import 'package:flutter/material.dart';
 
 class NickNameScreen extends StatefulWidget {
@@ -89,6 +89,8 @@ class _NickNameScreenState extends State<NickNameScreen> {
             Padding(
               padding: const EdgeInsets.only(bottom: 40),
               child: NextButton(
+                backgroundColor: Color(0xffEE4545),
+                textColor: Color(0xffFFFFFF),
                 isHalf: false,
                 text: '다음',
                 onPressed: onPressed,
@@ -107,4 +109,6 @@ class _NickNameScreenState extends State<NickNameScreen> {
       ),
     );
   }
+
+
 }

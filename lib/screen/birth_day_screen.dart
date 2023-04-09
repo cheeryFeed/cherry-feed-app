@@ -124,6 +124,8 @@ class _BirthDayScreenState extends State<BirthDayScreen> {
             Padding(
               padding: const EdgeInsets.only(bottom: 40),
               child: NextButton(
+                backgroundColor: Color(0xffEE4545),
+                textColor: Color(0xffFFFFFF),
                 isHalf: false,
                 text: '다음',
                 onPressed: onPressed,

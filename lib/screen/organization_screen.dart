@@ -93,6 +93,8 @@ class OrganizationScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 40),
               child: NextButton(
+                backgroundColor: Color(0xffEE4545),
+                textColor: Color(0xffFFFFFF),
                 text: '다음',
                 isHalf: false,
                 onPressed: () {

@@ -37,6 +37,8 @@ class _DateDialogState extends State<DateDialog> {
         Container(
           padding: const EdgeInsets.all(12.0),
           child: NextButton(
+            backgroundColor: Color(0xffEE4545),
+            textColor: Color(0xffFFFFFF),
             isHalf: false,
             text: '확인',
             onPressed: () => widget.onDateTimeChanged(

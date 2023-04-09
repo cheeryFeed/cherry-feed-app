@@ -1,6 +1,7 @@
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
-import 'package:cherry_feed/textEdit/text_edit.dart';
+import 'package:cherry_feed/screen/main_screen.dart';
+import 'package:cherry_feed/text_edit/text_edit.dart';
 import 'package:flutter/material.dart';
 
 class ConnectFeedScreen extends StatelessWidget {
@@ -72,19 +73,42 @@ class ConnectFeedScreen extends StatelessWidget {
               ),
             ),
 
-            SizedBox(
+            Container(
               width: 500,
               child: Row(
                 children: [
-                  NextButton(
-                    isHalf: true,
-                    text: '공유하기',
-                    onPressed: (){},
+                  Expanded(
+                    flex:10,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 5,top: 100),
+                      child: NextButton(
+                        backgroundColor: Color(0xffFFFFFF),
+                        textColor: Color(0xffEE4545),
+                        isHalf: true,
+                        text: '공유하기',
+                        onPressed: (){},
+                      ),
+                    ),
                   ),
-                  NextButton(
-                    isHalf: true,
-                    text: '나중에 하기',
-                    onPressed: (){},
+                  // Expanded(
+                  //   flex: 1,
+                  //     child:
+                  //     SizedBox(width: 10,)
+                  // ),
+                  Expanded(
+                    flex:10,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 5,top: 100),
+                      child: NextButton(
+                        backgroundColor: Color(0xffEE4545),
+                        textColor: Color(0xffFFFFFF),
+                        isHalf: true,
+                        text: '나중에 하기',
+                        onPressed: (){
+                          Navigator.push(context, MaterialPageRoute(builder: ((context) => MainScreen())));
+                        },
+                      ),
+                    ),
                   ),
                 ],
               ),
