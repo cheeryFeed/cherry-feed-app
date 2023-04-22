@@ -1,10 +1,40 @@
+import 'dart:convert';
+
 import 'package:cherry_feed/screen/nick_name_screen.dart';
+import 'package:cherry_feed/utils/api_host.dart';
+import 'package:cherry_feed/utils/token_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:http/http.dart' as http;
 
 class SocialButton extends StatelessWidget {
   final double width;
   final double height;
   final SocialType socialType;
+
+  Future<void> _getTokenFromServer(context) async {
+    OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+    var url = Uri.parse(ApiHost.API_HOST_DEV+'/api/v1/kakaoToken');
+    final response = await http.post(url, body: {'token': token.accessToken});
+    print(response.body);
+
+    TokenProvider tokenProvider = TokenProvider();
+    await tokenProvider.init();
+
+// access token과 refresh token 저장
+    String accessToken = jsonDecode(response.body)['accessToken'];
+    String refreshToken = jsonDecode(response.body)['refreshToken'];
+    await tokenProvider.setAccessToken(accessToken);
+    await tokenProvider.setRefreshToken(refreshToken);
+
+
+    print('저장한 토큰 불러와1 : ${await tokenProvider.getAccessToken()}');
+    print('저장한 토큰 불러와2 : ${await tokenProvider.getRefreshToken()}');
+
+    if(tokenProvider.getAccessToken() != 'access_token') {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => NickNameScreen(),));
+    }
+  }
 
   const SocialButton({
     Key? key,
@@ -39,12 +69,12 @@ class SocialButton extends StatelessWidget {
     final buttonData = data[socialType]!;
 
     return ElevatedButton(
-      onPressed: () {
-        // 카카오 로그인 기능 구현
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>const NickNameScreen()));
+      onPressed: () async {
+        await _getTokenFromServer(context);
       },
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(buttonData.backgroundColor),
+        backgroundColor:
+            MaterialStateProperty.all<Color>(buttonData.backgroundColor),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),

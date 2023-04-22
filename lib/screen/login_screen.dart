@@ -32,7 +32,7 @@ class LoginScreen extends StatelessWidget {
             SizedBox(height: 400),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
+              children: const [
                 SocialButton(socialType: SocialType.GOOGLE),
                 SizedBox(height: 16.0),
                 SocialButton(socialType: SocialType.APPLE),
@@ -41,7 +41,7 @@ class LoginScreen extends StatelessWidget {
                 SizedBox(height: 16.0),
               ],
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               '로그인함으로써 Bazzi Inc의 정책 및 약관에 동의합니다.',
               style:

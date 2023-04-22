@@ -3,10 +3,36 @@ import 'package:cherry_feed/button/next_button.dart';
 import 'package:cherry_feed/screen/main_screen.dart';
 import 'package:cherry_feed/text_edit/text_edit.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class ConnectFeedScreen extends StatelessWidget {
+class ConnectFeedScreen extends StatefulWidget {
   const ConnectFeedScreen({Key? key}) : super(key: key);
 
+  @override
+  State<ConnectFeedScreen> createState() => _ConnectFeedScreenState();
+}
+
+class _ConnectFeedScreenState extends State<ConnectFeedScreen> {
+
+  late String labelCode;
+
+  Future<String> getConnectCode() async {
+    Uri uri = Uri.parse('http://218.53.23.14:8090/api/v1/users/create/connectcode');
+    http.Response response = await http.get(uri);
+    print(response.body);
+    return response.body;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    labelCode = 'Type Something';
+    getConnectCode().then((value) {
+      setState(() {
+        labelCode = value;
+      });
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +73,7 @@ class ConnectFeedScreen extends StatelessWidget {
             SizedBox(
               child: TextEdit(
                 enabled: false,
-                textHint: 'Type Something',
+                textHint: labelCode,
                 controller: TextEditingController(),
                 onChange: (String){},
               ),
@@ -67,7 +93,7 @@ class ConnectFeedScreen extends StatelessWidget {
             SizedBox(
               child: TextEdit(
                 enabled: true,
-                textHint: '코드 입력',
+                textHint:'상대방의 코드를 입력 해 주세요.',
                 controller: TextEditingController(),
                 onChange: (String){},
               ),

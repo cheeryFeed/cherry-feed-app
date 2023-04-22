@@ -2,10 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>KAKAO_APP_KEY</key>
+	<string>kakao9a9838ce946ea91ba84901f7bd145a4a</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Cherry Feed</string>
+	<string>체리피드</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -47,5 +49,35 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSLocationUsageDescription</key>
+	<string>앱에서 위치 정보를 사용합니다.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>앱에서 위치 정보를 사용합니다.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>앱에서 항상 위치 정보를 사용합니다.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>앱에서 항상 위치 정보를 사용합니다.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>앱에서 사진 앨범에 접근합니다.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+	<key>UNUserNotificationCenterDelegate</key>
+	<string>$(PRODUCT_MODULE_NAME).AppDelegate</string>
+	<key>LSApplicationQueriesSchemes</key>
+      <array>
+          <!-- common -->
+          <string>kakao9a9838ce946ea91ba84901f7bd145a4a</string>
+
+          <!-- KakaoTalk login -->
+          <string>kakaokompassauth</string>
+          <string>storykompassauth</string>
+
+          <!-- KakaoLink -->
+          <string>kakaolink</string>
+          <!-- <string>kakaotalk-5.9.7</string> -->
+      </array>
 </dict>
 </plist>

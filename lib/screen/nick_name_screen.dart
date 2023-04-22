@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
 import 'package:cherry_feed/screen/birth_day_screen.dart';
 import 'package:cherry_feed/text_edit/text_edit.dart';
+import 'package:cherry_feed/utils/api_host.dart';
+import 'package:cherry_feed/utils/token_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class NickNameScreen extends StatefulWidget {
   const NickNameScreen({Key? key}) : super(key: key);
@@ -15,9 +20,21 @@ class _NickNameScreenState extends State<NickNameScreen> {
   final TextEditingController controller = TextEditingController();
   String _text = '';
 
+  TokenProvider tokenProvider = TokenProvider();
+  void nickNameCheck() async {
+
+    Uri uri = Uri.parse(ApiHost.API_HOST_DEV + '/api/v1/users/duplicationcheck/nickname?nickname=' + _text);
+    final headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+    };
+    http.Response response = await http.get(uri,headers: headers);
+    print(utf8.decode(response.bodyBytes));
+  }
+
   void _onTextChanged(String value) {
     setState(() {
       _text = value;
+      nickNameCheck();
     });
     print(_text);
   }

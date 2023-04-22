@@ -1,11 +1,56 @@
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
 import 'package:cherry_feed/screen/connect_feed_screen.dart';
-import 'package:cherry_feed/screen/organization_example_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class OrganizationScreen extends StatelessWidget {
   const OrganizationScreen({Key? key}) : super(key: key);
+
+  // 위치 권한
+  Future<void> requestLocationPermission() async {
+    final status = await Permission.location.request();
+    if (status == PermissionStatus.granted) {
+      // 권한이 부여됨
+    } else if (status == PermissionStatus.denied) {
+      // 권한이 거부됨
+    } else if (status == PermissionStatus.permanentlyDenied) {
+      // 권한이 영구적으로 거부됨
+    }
+    print('location_$status');//1ActBankMall08@%
+  }
+  // 사진첩 허가 권한
+  Future<void> requestPhotosPermission() async {
+    final status = await Permission.photos.request();
+    if (status == PermissionStatus.granted) {
+      // 권한이 부여됨
+    } else if (status == PermissionStatus.denied) {
+      // 권한이 거부됨
+    } else if (status == PermissionStatus.permanentlyDenied) {
+      // 권한이 영구적으로 거부됨
+    }
+    print('photo_$status');
+  }
+
+  // 알림 권한 취득
+  Future<void> requestNotificationPermission() async {
+    final status = await Permission.notification.request();
+    if (status == PermissionStatus.granted) {
+      // 권한이 부여됨
+    } else if (status == PermissionStatus.denied) {
+      // 권한이 거부됨
+    } else if (status == PermissionStatus.permanentlyDenied) {
+      // 권한이 영구적으로 거부됨
+    }
+    // Notification permission
+    if (await Permission.notification.isPermanentlyDenied) {
+      // 알림 권한이 영구적으로 거부됨
+      //await openAppSettings(); // 앱 설정 열기
+    } else {
+      // 알림 권한이 일시적으로 거부됨
+      print('notification_$status');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,11 +142,14 @@ class OrganizationScreen extends StatelessWidget {
                 textColor: Color(0xffFFFFFF),
                 text: '다음',
                 isHalf: false,
-                onPressed: () {
+                onPressed: () async {
+                  // print('onpresseed');
+                  await requestLocationPermission();
+                  await requestNotificationPermission();
+                  await requestPhotosPermission();
                   Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => ConnectFeedScreen()));
+                      MaterialPageRoute(builder: (context) => ConnectFeedScreen()));
                 },
               ),
             ),
