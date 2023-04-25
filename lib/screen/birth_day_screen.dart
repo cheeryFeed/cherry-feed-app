@@ -1,15 +1,16 @@
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
 import 'package:cherry_feed/date_dialog.dart';
+import 'package:cherry_feed/models/user/user.dart';
 import 'package:cherry_feed/screen/organization_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class BirthDayScreen extends StatefulWidget {
-  final String text;
+  final User user;
 
-  const BirthDayScreen({Key? key, required this.text}) : super(key: key);
+  const BirthDayScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   State<BirthDayScreen> createState() => _BirthDayScreenState();
@@ -18,6 +19,7 @@ class BirthDayScreen extends StatefulWidget {
 class _BirthDayScreenState extends State<BirthDayScreen> {
   DateTime _selectedDate = DateTime.now();
   final DateFormat formatter = DateFormat('yy년 MM월 dd일');
+  final DateFormat format = DateFormat('yyyy-MM-dd');
 
   Future<void> _showDatePickerDialog(BuildContext context) async {
     final pickedDate = await showDialog<DateTime>(
@@ -37,6 +39,8 @@ class _BirthDayScreenState extends State<BirthDayScreen> {
       setState(() {
         _selectedDate = pickedDate;
       });
+      widget.user.setBirth(format.format(pickedDate));
+      print(widget.user.toString());
     }
   }
 
@@ -46,6 +50,7 @@ class _BirthDayScreenState extends State<BirthDayScreen> {
       backgroundColor: Color(0xffFAFAFA),
       appBar: const CustomAppBar(
         isShow: true,
+        isBorder: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -56,7 +61,7 @@ class _BirthDayScreenState extends State<BirthDayScreen> {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: Text(
-                  '${widget.text} 님의 \n'
+                  '${widget.user.nickname} 님의 \n'
                   '생일을 알려주세요',
                   style: Theme.of(context).textTheme.bodyText1,
                   textAlign: TextAlign.left,
@@ -138,6 +143,6 @@ class _BirthDayScreenState extends State<BirthDayScreen> {
   }
 
   void onPressed() {
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>OrganizationScreen()));
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>OrganizationScreen(user:widget.user)));
   }
 }

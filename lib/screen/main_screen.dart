@@ -1,5 +1,6 @@
 import 'package:cherry_feed/appbar/main_app_bar.dart';
 import 'package:cherry_feed/appbar/plan_app_bar.dart';
+import 'package:cherry_feed/models/user/user.dart';
 import 'package:cherry_feed/screen/calendar_screen.dart';
 import 'package:cherry_feed/screen/couple_screen.dart';
 import 'package:cherry_feed/screen/home_screen.dart';
@@ -8,7 +9,8 @@ import 'package:cherry_feed/screen/recommendation_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  final User user;
+  const MainScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   State<MainScreen> createState() => _MainScreenState();

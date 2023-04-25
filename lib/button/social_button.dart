@@ -1,22 +1,39 @@
 import 'dart:convert';
 
+import 'package:cherry_feed/screen/birth_day_screen.dart';
+import 'package:cherry_feed/screen/main_screen.dart';
 import 'package:cherry_feed/screen/nick_name_screen.dart';
 import 'package:cherry_feed/utils/api_host.dart';
 import 'package:cherry_feed/utils/token_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:http/http.dart' as http;
+import 'package:cherry_feed/models/user/user.dart' as user_info;
 
 class SocialButton extends StatelessWidget {
   final double width;
   final double height;
   final SocialType socialType;
 
+  Future<user_info.User> getUser(String token) async {
+    final url = Uri.parse(ApiHost.API_HOST_DEV + '/api/v1/users');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${await token}'
+    };
+    print(headers.toString());
+    final response = await http.get(url, headers: headers);
+    //print(tokenProvider.getAccessToken());
+    final decodeResponse = utf8.decode(response.bodyBytes);
+    final jsonMap = json.decode(decodeResponse);
+    return user_info.User.fromJson(jsonMap);
+  }
+
   Future<void> _getTokenFromServer(context) async {
     OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
-    var url = Uri.parse(ApiHost.API_HOST_DEV+'/api/v1/kakaoToken');
+    var url = Uri.parse(ApiHost.API_HOST_DEV + '/kakaoToken');
     final response = await http.post(url, body: {'token': token.accessToken});
-    print(response.body);
+    // print(response.body);
 
     TokenProvider tokenProvider = TokenProvider();
     await tokenProvider.init();
@@ -27,12 +44,23 @@ class SocialButton extends StatelessWidget {
     await tokenProvider.setAccessToken(accessToken);
     await tokenProvider.setRefreshToken(refreshToken);
 
+    user_info.User user = await getUser(accessToken);
 
     print('저장한 토큰 불러와1 : ${await tokenProvider.getAccessToken()}');
-    print('저장한 토큰 불러와2 : ${await tokenProvider.getRefreshToken()}');
-
-    if(tokenProvider.getAccessToken() != 'access_token') {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => NickNameScreen(),));
+    print('user info : : : ${user.toString()}');
+    if (tokenProvider.getAccessToken() != 'access_token') {
+      if (user.nickname == null) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => NickNameScreen()));
+      } else if (user.birth == null) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BirthDayScreen(user: user)));
+      } else {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => MainScreen(user: user)));
+      }
     }
   }
 

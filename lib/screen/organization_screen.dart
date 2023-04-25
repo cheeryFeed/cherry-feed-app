@@ -1,11 +1,13 @@
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
+import 'package:cherry_feed/models/user/user.dart';
 import 'package:cherry_feed/screen/connect_feed_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class OrganizationScreen extends StatelessWidget {
-  const OrganizationScreen({Key? key}) : super(key: key);
+  final User user;
+  const OrganizationScreen({Key? key, required this.user}) : super(key: key);
 
   // 위치 권한
   Future<void> requestLocationPermission() async {
@@ -58,6 +60,7 @@ class OrganizationScreen extends StatelessWidget {
       backgroundColor: Color(0xffFAFAFA),
       appBar: CustomAppBar(
         isShow: true,
+        isBorder: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -149,7 +152,7 @@ class OrganizationScreen extends StatelessWidget {
                   await requestPhotosPermission();
                   Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ConnectFeedScreen()));
+                      MaterialPageRoute(builder: (context) => ConnectFeedScreen(user: user)));
                 },
               ),
             ),

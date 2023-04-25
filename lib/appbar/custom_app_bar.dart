@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isShow;
-  const CustomAppBar({Key? key, required this.isShow,}) : super(key: key);
+  final bool isBorder;
+  const CustomAppBar({Key? key, required this.isShow, required this.isBorder,}) : super(key: key);
 
 
   @override
@@ -27,6 +28,20 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0.0,
       // 110 - 상태바의 크기.
       toolbarHeight: (110 - MediaQuery.of(context).padding.top),
+      bottom: isBorder ? PreferredSize(
+        preferredSize: Size.fromHeight(1),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey[300]!,
+              ),
+            ),
+          ),
+          padding: EdgeInsets.only(left: 190, right: 190),
+          child: SizedBox(height: 1),
+        ),
+      ) : null,
     );
   }
 }

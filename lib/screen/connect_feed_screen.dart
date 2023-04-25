@@ -1,20 +1,49 @@
+import 'dart:convert';
+
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
+import 'package:cherry_feed/models/user/user.dart';
 import 'package:cherry_feed/screen/main_screen.dart';
 import 'package:cherry_feed/text_edit/text_edit.dart';
+import 'package:cherry_feed/utils/token_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ConnectFeedScreen extends StatefulWidget {
-  const ConnectFeedScreen({Key? key}) : super(key: key);
+  final User user;
+  const ConnectFeedScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   State<ConnectFeedScreen> createState() => _ConnectFeedScreenState();
 }
 
 class _ConnectFeedScreenState extends State<ConnectFeedScreen> {
+  late TokenProvider _tokenProvider;
+  String _accessToken = "";
 
   late String labelCode;
+  Future<void> sendDataToServer(User user) async {
+    print(_accessToken);
+// access token과 refresh token 저장
+    final url = Uri.parse('http://218.53.23.14:8090/api/v1/users/kakao-join');
+    final body = json.encode(user.toJson());
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $_accessToken'
+    };
+    print('TOKENENENENE : : : :: : : ${_accessToken} ');
+
+
+    final response = await http.post(url, headers: headers, body: body);
+    if (response.statusCode == 200) {
+      // 성공적으로 요청을 보낸 경우
+      print('Request succeeded with status ${response.statusCode}');
+    } else {
+      // 요청이 실패한 경우
+      print('Request failed with status ${response.statusCode}');
+    }
+    print(user);
+  }
 
   Future<String> getConnectCode() async {
     Uri uri = Uri.parse('http://218.53.23.14:8090/api/v1/users/create/connectcode');
@@ -23,13 +52,26 @@ class _ConnectFeedScreenState extends State<ConnectFeedScreen> {
     return response.body;
   }
 
+  Future<void> initToken() async {
+    await _tokenProvider.init();
+    await _tokenProvider.getAccessToken().then((value){
+      setState(() {
+        _accessToken = value!;
+      });
+    });
+
+  }
   @override
   void initState() {
     super.initState();
+    _tokenProvider = TokenProvider();
+    initToken();
     labelCode = 'Type Something';
     getConnectCode().then((value) {
       setState(() {
         labelCode = value;
+        widget.user.setConnectCode(value);
+        print(widget.user.toString());
       });
     });
   }
@@ -37,7 +79,7 @@ class _ConnectFeedScreenState extends State<ConnectFeedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xffFAFAFA),
-      appBar: CustomAppBar(isShow: true,),
+      appBar: CustomAppBar(isShow: true,isBorder: false,),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -131,7 +173,8 @@ class _ConnectFeedScreenState extends State<ConnectFeedScreen> {
                         isHalf: true,
                         text: '나중에 하기',
                         onPressed: (){
-                          Navigator.push(context, MaterialPageRoute(builder: ((context) => MainScreen())));
+                          sendDataToServer(widget.user);
+                          Navigator.push(context, MaterialPageRoute(builder: ((context) => MainScreen(user:widget.user))));
                         },
                       ),
                     ),

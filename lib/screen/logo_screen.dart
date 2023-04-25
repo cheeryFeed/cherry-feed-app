@@ -11,7 +11,7 @@ class LogoScreen extends StatelessWidget {
     return
       Scaffold(
         backgroundColor: Color(0xffFAFAFA),
-      appBar: const CustomAppBar(isShow: false,),
+      appBar: const CustomAppBar(isShow: false,isBorder: false,),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         child: Center(

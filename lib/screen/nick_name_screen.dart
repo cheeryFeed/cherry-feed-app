@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
+import 'package:cherry_feed/models/user/user.dart';
 import 'package:cherry_feed/screen/birth_day_screen.dart';
 import 'package:cherry_feed/text_edit/text_edit.dart';
 import 'package:cherry_feed/utils/api_host.dart';
@@ -14,29 +15,33 @@ class NickNameScreen extends StatefulWidget {
 
   @override
   State<NickNameScreen> createState() => _NickNameScreenState();
+
 }
 
 class _NickNameScreenState extends State<NickNameScreen> {
+  User user = User();
   final TextEditingController controller = TextEditingController();
   String _text = '';
-
   TokenProvider tokenProvider = TokenProvider();
-  void nickNameCheck() async {
 
-    Uri uri = Uri.parse(ApiHost.API_HOST_DEV + '/api/v1/users/duplicationcheck/nickname?nickname=' + _text);
+  Future<http.Response> nickNameCheck() async {
+    Uri uri = Uri.parse(ApiHost.API_HOST_DEV +
+        '/api/v1/users/duplicationcheck/nickname?nickname=' +
+        _text);
     final headers = {
       'Content-Type': 'application/json; charset=utf-8',
     };
-    http.Response response = await http.get(uri,headers: headers);
-    print(utf8.decode(response.bodyBytes));
+    http.Response response = await http.get(uri, headers: headers);
+    return response;
   }
 
   void _onTextChanged(String value) {
     setState(() {
       _text = value;
       nickNameCheck();
+      user.setNickname(value);
     });
-    print(_text);
+    print('username : ${user.toString()}');
   }
 
   @override
@@ -45,6 +50,7 @@ class _NickNameScreenState extends State<NickNameScreen> {
       backgroundColor: Color(0xffFAFAFA),
       appBar: const CustomAppBar(
         isShow: true,
+        isBorder: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -76,7 +82,7 @@ class _NickNameScreenState extends State<NickNameScreen> {
             ),
             SizedBox(
               child: TextEdit(
-                enabled:true,
+                enabled: true,
                 textHint: '최대 12자 작성',
                 controller: controller,
                 onChange: _onTextChanged,
@@ -86,16 +92,26 @@ class _NickNameScreenState extends State<NickNameScreen> {
               padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
-                child: _text == 'CherryFeed'
-                    ? Text(
-                        '이미 사용 중인 닉네임입니다.',
-                        style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w100,
-                              color: Color(0xffEE4545),
-                            ),
-                      )
-                    : null,
+                child: FutureBuilder<http.Response>(
+                  future: nickNameCheck(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final response = snapshot.data!;
+                      if (response.statusCode != 200) {
+                        return Text(
+                          '이미 사용 중인 닉네임입니다.',
+                          style:
+                              Theme.of(context).textTheme.bodyText1?.copyWith(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w100,
+                                    color: Color(0xffEE4545),
+                                  ),
+                        );
+                      }
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
               ),
             ),
             const Expanded(
@@ -122,10 +138,8 @@ class _NickNameScreenState extends State<NickNameScreen> {
   void onPressed() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (builder) => BirthDayScreen(text: _text),
+        builder: (builder) => BirthDayScreen(user: user,),
       ),
     );
   }
-
-
 }

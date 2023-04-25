@@ -59,6 +59,10 @@
 	<string>앱에서 항상 위치 정보를 사용합니다.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>앱에서 사진 앨범에 접근합니다.</string>
+	<key>NSCameraUsageDescription</key>
+    <string>앱에서 카메라에 접근합니다.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>앱에서 카메라 녹화에 접근합니다.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

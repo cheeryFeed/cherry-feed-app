@@ -11,6 +11,7 @@ class LoginScreen extends StatelessWidget {
       backgroundColor: Color(0xffFAFAFA),
       appBar: const CustomAppBar(
         isShow: false,
+        isBorder: false,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),

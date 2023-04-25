@@ -1,3 +1,4 @@
+import 'package:cherry_feed/screen/calendar_screen.dart';
 import 'package:flutter/material.dart';
 
 class ContentHeader extends StatelessWidget {
@@ -37,21 +38,26 @@ class ContentHeader extends StatelessWidget {
           ],
         ),
         const SizedBox(
-          width: 100,
+          width: 86,
         ),
         Column(
           children: [
             SizedBox(
-              child: Text(
-                '전체보기',
-                style: TextStyle(
-                  fontSize: 19,
-                  height: 1.3,
-                  fontWeight: FontWeight.normal,
-                  fontFamily: 'Pretendard',
-                  letterSpacing: 0,
-                  color: Color(0xffEE4545),
+              child: TextButton(
+                child: Text(
+                    '전체보기',
+                    style: TextStyle(
+                      fontSize: 19,
+                      height: 1.3,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: 'Pretendard',
+                      letterSpacing: 0,
+                      color: Color(0xffEE4545),
+                    )
                 ),
+                onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=> CalendarScreen()));
+                },
               ),
             ),
             const SizedBox(
