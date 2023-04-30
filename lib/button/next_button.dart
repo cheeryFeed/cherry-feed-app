@@ -12,7 +12,7 @@ class NextButton extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     if(isHalf) {
-      width = width / 2;
+      width = (width / 2) - 30;
     }
     double height = MediaQuery.of(context).size.height / 15;
     return ElevatedButton(
