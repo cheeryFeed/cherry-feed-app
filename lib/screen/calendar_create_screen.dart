@@ -199,18 +199,24 @@ class _CalendarCreateScreenState extends State<CalendarCreateScreen> {
 
   void onPressed() async {
     // state를 json 형태로 변환
-    Calendar calendar = Calendar(anvsyAt:anvsyAt, anvsyNm:anvsyNm.toString(),imgId: imgId,status: status ,id: null);
+    Calendar calendar = Calendar(
+      anvsyAt: anvsyAt,
+      anvsyNm: anvsyNm.toString(),
+      imgId: imgId,
+      status: status,
+      id: null,
+    );
     String anvsyAtString = DateFormat('yyyyMMdd').format(anvsyAt);
     final json = {...calendar.toJson(), 'anvsyAt': anvsyAtString.toString()};
-    print(json);
+    print('쏜다 : : ${json}');
     //http://218.53.23.14:8090/api/v1/anvsy
     final url = ApiHost.API_HOST_DEV + '/api/v1/anvsy';
     final headers = {
       'Content-type': 'application/json;charset=utf-8',
       'Authorization': 'Bearer ${_accessToken}',
     };
-    final response =
-        await http.post(Uri.parse(url), headers: headers, body: jsonEncode(json));
+    final response = await http.post(Uri.parse(url),
+        headers: headers, body: jsonEncode(json));
     print(response.body);
     // print(response.);
     if (response.statusCode == 200) {
@@ -242,6 +248,4 @@ class _CalendarCreateScreenState extends State<CalendarCreateScreen> {
       });
     }
   }
-
-
 }

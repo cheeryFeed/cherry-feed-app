@@ -24,12 +24,19 @@ class CalendarScreen extends StatefulWidget {
 class _CalendarScreenState extends State<CalendarScreen> {
   final String _apiUrl = '${ApiHost.API_HOST_DEV}/api/v1/anvsy';
   late String _accessToken;
+  int count = 0;
   List<Calendar> calendars = [];
 
   @override
   void initState() {
     super.initState();
     _initWidget();
+  }
+
+  void setListCount(int value) {
+    setState(() {
+      count = value;
+    });
   }
 
   Future<void> _initWidget() async {
@@ -41,7 +48,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
       _accessToken = token.toString();
       print('TOKEN : : ${_accessToken}');
     });
-    await _fetchCalendars();
+    List<Calendar> items = await _fetchCalendars();
+    if (items.isNotEmpty) {
+      setState(() {
+        calendars = items;
+        count = items.length;
+      });
+    }
   }
 
   Future<List<Calendar>> _fetchCalendars() async {
@@ -59,8 +72,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _buildCalendarList() {
+    Future<List<Calendar>> items = _fetchCalendars();
     return FutureBuilder<List<Calendar>>(
-      future: _fetchCalendars(),
+      future: items,
       builder: (BuildContext context, AsyncSnapshot<List<Calendar>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator();
@@ -75,55 +89,91 @@ class _CalendarScreenState extends State<CalendarScreen> {
               return Padding(
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: Container(
-                  height: 120,
+                  height: 140,
                   decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/dummy/ex_1.jpg'),
-                      fit: BoxFit.cover,
-                    ),
+                    image: calendar.imgId != null
+                        ? DecorationImage(
+                            image: NetworkImage(ApiHost.API_HOST_DEV +
+                                '/api/v1/file/file-system/${calendar.imgId}'),
+                            fit: BoxFit.cover,
+                          )
+                        : DecorationImage(
+                            image: AssetImage('assets/images/dummy/ex_8.jpg'),
+                            fit: BoxFit.cover,
+                          ),
                     borderRadius: BorderRadius.circular(13),
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Expanded(
-                        flex: 1,
-                        child: SizedBox(
-                          height: 100,
-                          child: Row(
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Column(
                             children: [
-                              Image.asset('assets/images/plan_icon.png'),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  calendar.anvsyNm == null
-                                      ? SizedBox.shrink()
-                                      : Text(calendar.anvsyNm!),
-                                  SizedBox(height: 10),
-                                  calendar.anvsyAt == null
-                                      ? SizedBox.shrink()
-                                      : Text(
-                                          '${DateFormat('yyyy-MM-dd').format(calendar.anvsyAt!)}${CherryFeedUtil.weekdayToString(calendar.anvsyAt!.weekday)}'),
-                                ],
+                              Image.asset(
+                                'assets/images/plan_icon.png',
+                                height: 60,
+                                width: 60,
+                              ),
+                              SizedBox(
+                                height: 30,
+                                width: 110,
+                              )
+                            ],
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 15,
+                              ),
+                              calendar.anvsyNm == null
+                                  ? SizedBox.shrink()
+                                  : SizedBox(
+                                      width: 150,
+                                      child: Text(
+                                        calendar.anvsyNm!,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 19,
+                                        ),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ),
+                              SizedBox(height: 5),
+                              calendar.anvsyAt == null
+                                  ? SizedBox.shrink()
+                                  : SizedBox(
+                                      width: 150,
+                                      child: Text(
+                                        '${DateFormat('yyyy-MM-dd').format(calendar.anvsyAt!)}${CherryFeedUtil.weekdayToString(calendar.anvsyAt!.weekday)}',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ),
+                              SizedBox(height: 20),
+                              SizedBox(
+                                width: 150,
+                                child: calendar.anvsyAt == null
+                                    ? SizedBox.shrink()
+                                    : Text(
+                                        '${DateFormat('yyyy-MM-dd').format(calendar.anvsyAt!)}${CherryFeedUtil.weekdayToString(calendar.anvsyAt!.weekday)}',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: Color(0xffABAFB2),
+                                        ),
+                                        textAlign: TextAlign.left,
+                                      ),
                               ),
                             ],
                           ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: SizedBox(
-                          child: calendar.anvsyAt == null
-                              ? SizedBox.shrink()
-                              : Text(
-                                  '${DateFormat('yyyy-MM-dd').format(calendar.anvsyAt!)}${CherryFeedUtil.weekdayToString(calendar.anvsyAt!.weekday)}',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Color(0xffABAFB2),
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                        ),
+                        ],
                       ),
                     ],
                   ),
@@ -175,7 +225,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     SizedBox(
                       width: 80,
                       child: Text(
-                        '${calendars.length}개',
+                        '${count}개',
                         style: TextStyle(
                           fontSize: 20,
                           color: Color(0xffEE4545),

@@ -12,6 +12,7 @@ class Calendar {
     required this.imgId,
     required this.status,
   });
+
   factory Calendar.fromJson(Map<String, dynamic> json) {
     DateTime? dateTime;
     if(json['anvsyAt'] != null && json['anvsyAt'].toString().isNotEmpty) {
