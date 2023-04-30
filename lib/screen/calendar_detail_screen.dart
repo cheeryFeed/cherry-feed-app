@@ -124,7 +124,67 @@ class _CalendarDetailScreenState extends State<CalendarDetailScreen> {
             children: [
               NextButton(
                 text: '삭제',
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        title: Padding(
+                          padding: const EdgeInsets.only(top:16.0),
+                          child: Text('기념일을 삭제할까요 ?',textAlign: TextAlign.center,style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),),
+                        ),
+                        content: Text('삭제된 일정은 복원이 불가능합니다. \n상대방에게 혼날 수 있으니 확인 해 주세요.',textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.grey),
+                        ),
+                        actions: [
+                          SizedBox(height: 10,),
+                          SizedBox(
+                            height: 50,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: NextButton(
+                                    isHalf: true,
+                                    textColor: Colors.white,
+                                    backgroundColor: Color(0xffEE4545),
+                                    onPressed: () {
+
+
+
+                                      Navigator.pop(context);
+                                    },
+                                    text: '삭제하기',
+                                  ),
+                                ),
+                                SizedBox(width: 15,),
+                                Expanded(
+                                  child: NextButton(
+                                    textColor: Color(0xffEE4545),
+                                    backgroundColor: Color(0xffFFFAFA),
+                                    isHalf: true,
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    text: '취소',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 10,)
+                        ],
+                      );
+                    },
+                  );
+
+
+                },
                 isHalf: true,
                 backgroundColor: Colors.white,
                 textColor: Color(0xffEE4545),
