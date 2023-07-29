@@ -1,14 +1,17 @@
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
+import 'package:cherry_feed/screen/calendar_screen.dart';
 import 'package:cherry_feed/utils/api_host.dart';
 import 'package:cherry_feed/utils/cherry_feed_util.dart';
+import 'package:cherry_feed/utils/token_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
-import '../models/calendar/calendar.dart';
+import '../models/anvsy/anvsy.dart';
 
 class CalendarDetailScreen extends StatefulWidget {
-  final Calendar calendar;
+  final Anvsy calendar;
 
   const CalendarDetailScreen({Key? key, required this.calendar})
       : super(key: key);
@@ -154,10 +157,7 @@ class _CalendarDetailScreenState extends State<CalendarDetailScreen> {
                                     textColor: Colors.white,
                                     backgroundColor: Color(0xffEE4545),
                                     onPressed: () {
-
-
-
-                                      Navigator.pop(context);
+                                      removeCalendar(context);
                                     },
                                     text: '삭제하기',
                                   ),
@@ -182,8 +182,6 @@ class _CalendarDetailScreenState extends State<CalendarDetailScreen> {
                       );
                     },
                   );
-
-
                 },
                 isHalf: true,
                 backgroundColor: Colors.white,
@@ -202,13 +200,21 @@ class _CalendarDetailScreenState extends State<CalendarDetailScreen> {
       ),
     );
   }
+  void removeCalendar(context) async {
+    final tokenProvider = TokenProvider();
+    await tokenProvider.init();
+    final token = await tokenProvider.getAccessToken();
+    Uri uri = Uri.parse('${ApiHost.API_HOST_DEV}/api/v1/anvsy/${widget.calendar.id}');
+    await http.delete(uri, headers: {
+      'Authorization': 'Bearer $token',
+    });
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>CalendarScreen()));
+  }
 
   Widget buildDDayList(BuildContext context, DateTime targetDate) {
     List<String> dDayList = [];
-
     // 현재 날짜
     DateTime now = DateTime.now();
-
     // 날짜 차이. 689
     int diff = targetDate.difference(now).inDays;
     int roundedDiff = (diff ~/ 100) * 100; // 100 단위로 절삭

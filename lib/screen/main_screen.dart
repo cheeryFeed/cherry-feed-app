@@ -10,7 +10,8 @@ import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
   final User user;
-  const MainScreen({Key? key, required this.user}) : super(key: key);
+  final int defaultIndex;
+  const MainScreen({Key? key, required this.user,required this.defaultIndex}) : super(key: key);
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -25,6 +26,12 @@ class _MainScreenState extends State<MainScreen> {
     RecommendationScreen(),
     CoupleScreen(),
   ];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _currentIndex = widget.defaultIndex;
+  }
 
   void onTabTapped(int index) {
     setState(() {

@@ -196,7 +196,7 @@ class _PlanScreenState extends State<PlanScreen> {
                               const SizedBox(height: 12),
                               Text(
                                 plan.name,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -206,9 +206,9 @@ class _PlanScreenState extends State<PlanScreen> {
                               ),
                               Row(
                                 children: [
-                                  Icon(Icons.calendar_today,
+                                  const Icon(Icons.calendar_today,
                                       color: Colors.grey),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Text(
                                     '${plan.startDate} ~ ${plan.endDate}',
                                     style: TextStyle(

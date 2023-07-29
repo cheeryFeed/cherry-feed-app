@@ -18,7 +18,7 @@ class TextEdit extends StatelessWidget {
           onChange(value);
         }
       },
-      enabled:enabled ,
+      enabled:true ,
       cursorColor: Color(0xff202020),
       decoration: InputDecoration(
         focusedBorder: UnderlineInputBorder(

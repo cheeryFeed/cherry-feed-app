@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
@@ -14,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-import '../models/calendar/calendar.dart';
+import '../models/anvsy/anvsy.dart';
 
 class CalendarCreateScreen extends StatefulWidget {
   final int status;
@@ -93,11 +94,78 @@ class _CalendarCreateScreenState extends State<CalendarCreateScreen> {
         isBorder: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.only(top:10,left: 20,right: 20,bottom: 20.0),
         child: Column(
           children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                color: Colors.grey[200],
+              ),
+              height: 40,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          status = 1;
+                        });
+                      },
+                      child: Container(
+                        margin: EdgeInsets.all(3.0),
+                        height: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: status == 1 ? Colors.white : Colors.grey[200],
+
+                        ),
+                        child: Center(
+                          child: Text(
+                            '반복',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: status == 1 ? Color(0xFFEE4545) : Color(0xFF707478),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          status = 2;
+                        });
+                      },
+                      child: Container(
+                        margin: EdgeInsets.all(3.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: status == 2 ? Colors.white : Colors.grey[200],
+                        ),
+                        child: Center(
+                          child: Text(
+                            '목표',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: status == 2 ?  Color(0xFFEE4545)  : Color(0xFF707478),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: Padding(
@@ -106,7 +174,7 @@ class _CalendarCreateScreenState extends State<CalendarCreateScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        '반복(기념일)',
+                        status == 1 ? '반복(기념일)' : '목표(디데이)',
                         style: Theme.of(context).textTheme.bodyText1?.copyWith(
                               fontSize: 20,
                             ),
@@ -115,8 +183,8 @@ class _CalendarCreateScreenState extends State<CalendarCreateScreen> {
                       SizedBox(
                         height: 4,
                       ),
-                      Text(
-                        '커플, 생일, 결혼기념일, 월급같은 기념일에 적합합니다.',
+                      Text(status == 1 ?
+                        '커플, 생일, 결혼기념일, 월급같은 기념일에 적합합니다.' : '시험, 전역, 여행, 다이어트 목표 기념일에 적합합니다.',
                         style: TextStyle(
                           fontSize: 16,
                           color: Color(0xff707478),
@@ -134,7 +202,7 @@ class _CalendarCreateScreenState extends State<CalendarCreateScreen> {
             SizedBox(
               height: 20,
             ),
-            TitleInput(onValueChanged: setTitle),
+            TitleInput(onValueChanged: setTitle, textSize: 19,placeholder: '제목을 입력해주세요.',),
             SizedBox(
               width: MediaQuery.of(context).size.width - 20,
               child: Row(
@@ -196,10 +264,30 @@ class _CalendarCreateScreenState extends State<CalendarCreateScreen> {
       ),
     );
   }
+  Widget buildTab(String text, bool isActive) {
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          color: isActive ? Color(0xffEE4545) : Colors.white,
+        ),
+        child: Center(
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: isActive ? Colors.white : Color(0xff707478),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   void onPressed() async {
     // state를 json 형태로 변환
-    Calendar calendar = Calendar(
+    Anvsy calendar = Anvsy(
       anvsyAt: anvsyAt,
       anvsyNm: anvsyNm.toString(),
       imgId: imgId,

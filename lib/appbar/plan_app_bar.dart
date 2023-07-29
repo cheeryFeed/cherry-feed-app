@@ -1,13 +1,16 @@
 import 'package:cherry_feed/button/next_button.dart';
+import 'package:cherry_feed/screen/plan_create_screen.dart';
 import 'package:flutter/material.dart';
 
 class PlanAppBar extends StatelessWidget implements PreferredSizeWidget {
   const PlanAppBar({Key? key}) : super(key: key);
   final double height = 400;
+
   @override
   Size get preferredSize {
     return Size.fromHeight(height);
   }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -46,7 +49,10 @@ class PlanAppBar extends StatelessWidget implements PreferredSizeWidget {
               child: SizedBox(
                 width: 60,
                 child: IconButton(
-                  icon: Icon(Icons.photo_camera_back_outlined, size: 36,),
+                  icon: Icon(
+                    Icons.photo_camera_back_outlined,
+                    size: 36,
+                  ),
                   color: Colors.white,
                   onPressed: () {
                     // 프로필 아이콘을 눌렀을 때 동작할 코드를 작성합니다.
@@ -57,7 +63,7 @@ class PlanAppBar extends StatelessWidget implements PreferredSizeWidget {
           ],
         ),
         Positioned(
-          bottom:  height - 60,
+          bottom: height - 60,
           left: 20,
           right: 20,
           child: Container(
@@ -76,8 +82,17 @@ class PlanAppBar extends StatelessWidget implements PreferredSizeWidget {
           bottom: 16,
           left: 20,
           right: 20,
-          child: NextButton(text: '계획 추가', onPressed: (){},
-              isHalf: false, backgroundColor: Color(0xffEE4545), textColor: Colors.white),
+          child: NextButton(
+              text: '계획 추가',
+              onPressed: () => {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => new PlanCreateScreen()))
+                  },
+              isHalf: false,
+              backgroundColor: Color(0xffEE4545),
+              textColor: Colors.white),
         ),
       ],
     );

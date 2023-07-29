@@ -25,7 +25,7 @@ class _ConnectFeedScreenState extends State<ConnectFeedScreen> {
   Future<void> sendDataToServer(User user) async {
     print(_accessToken);
 // access token과 refresh token 저장
-    final url = Uri.parse('http://218.53.23.14:8090/api/v1/users/kakao-join');
+    final url = Uri.parse('http://localhost:8090/api/v1/users/kakao-join');
     final body = json.encode(user.toJson());
     final headers = {
       'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ class _ConnectFeedScreenState extends State<ConnectFeedScreen> {
   }
 
   Future<String> getConnectCode() async {
-    Uri uri = Uri.parse('http://218.53.23.14:8090/api/v1/users/create/connectcode');
+    Uri uri = Uri.parse('http://localhost:8090/api/v1/users/create/connectcode');
     http.Response response = await http.get(uri);
     print(response.body);
     return response.body;
@@ -174,7 +174,7 @@ class _ConnectFeedScreenState extends State<ConnectFeedScreen> {
                         text: '나중에 하기',
                         onPressed: (){
                           sendDataToServer(widget.user);
-                          Navigator.push(context, MaterialPageRoute(builder: ((context) => MainScreen(user:widget.user))));
+                          Navigator.push(context, MaterialPageRoute(builder: ((context) => MainScreen(user:widget.user, defaultIndex: 0,))));
                         },
                       ),
                     ),

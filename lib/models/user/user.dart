@@ -11,6 +11,7 @@ class User {
   String? socialId;
   String? socialProvider;
   String? userName;
+  int? coupleId;
   User();
   void setBirth(String value) {
     this.birth = value;
@@ -18,6 +19,9 @@ class User {
 
   void setConnectCode(String value) {
     this.connectCode = value;
+  }
+  void setCoupleId(int? value) {
+    this.coupleId = value;
   }
 
   void setEmail(String value) {
@@ -74,12 +78,13 @@ class User {
       'socialId': socialId,
       'socialProvider': socialProvider,
       'userName': userName,
+      'coupleId': coupleId,
     };
   }
 
   @override
   String toString() {
-    return 'User{birth: $birth, connectCode: $connectCode, email: $email, gender: $gender, imgId: $imgId, isTerms: $isTerms, nickname: $nickname, password: $password, phone: $phone, socialId: $socialId, socialProvider: $socialProvider, userName: $userName}';
+    return 'User{birth: $birth, connectCode: $connectCode, email: $email, gender: $gender, imgId: $imgId, isTerms: $isTerms, nickname: $nickname, password: $password, phone: $phone, socialId: $socialId, socialProvider: $socialProvider, userName: $userName, coupleId: $coupleId}';
   }
 
   static User fromJson(Map<String, dynamic> json) {
@@ -95,6 +100,7 @@ class User {
       ..phone = json['phone']
       ..socialId = json['socialId']
       ..socialProvider = json['socialProvider']
-      ..userName = json['userName'];
+      ..userName = json['userName']
+      ..coupleId = json['coupleId'];
   }
 }

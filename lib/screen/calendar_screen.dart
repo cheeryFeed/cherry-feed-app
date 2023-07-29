@@ -9,7 +9,7 @@ import 'package:cherry_feed/utils/token_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:cherry_feed/models/calendar/calendar.dart';
+import 'package:cherry_feed/models/anvsy/anvsy.dart';
 import 'package:intl/intl.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -26,7 +26,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   final String _apiUrl = '${ApiHost.API_HOST_DEV}/api/v1/anvsy';
   late String _accessToken;
   int count = 0;
-  List<Calendar> calendars = [];
+  List<Anvsy> calendars = [];
 
   @override
   void initState() {
@@ -49,7 +49,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       _accessToken = token.toString();
       print('TOKEN : : ${_accessToken}');
     });
-    List<Calendar> items = await _fetchCalendars();
+    List<Anvsy> items = await _fetchCalendars();
     if (items.isNotEmpty) {
       setState(() {
         calendars = items;
@@ -58,14 +58,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
-  Future<List<Calendar>> _fetchCalendars() async {
+  Future<List<Anvsy>> _fetchCalendars() async {
     final response = await http.get(Uri.parse(_apiUrl), headers: {
       'Authorization': 'Bearer $_accessToken',
     });
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-      print(data.toString());
-      return data.map((e) => Calendar.fromJson(e)).toList();
+      return data.map((e) => Anvsy.fromJson(e)).toList();
     } else {
       print(response.body);
       throw Exception('Failed to load calendars');
@@ -73,20 +72,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _buildCalendarList() {
-    Future<List<Calendar>> items = _fetchCalendars();
-    return FutureBuilder<List<Calendar>>(
+    Future<List<Anvsy>> items = _fetchCalendars();
+    return FutureBuilder<List<Anvsy>>(
       future: items,
-      builder: (BuildContext context, AsyncSnapshot<List<Calendar>> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<List<Anvsy>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator();
         } else if (snapshot.hasData) {
-          final List<Calendar> calendars = snapshot.data!;
+          final List<Anvsy> calendars = snapshot.data!;
           print(snapshot.data!.toString());
           return ListView.builder(
             shrinkWrap: true,
             itemCount: calendars.length,
             itemBuilder: (BuildContext context, int index) {
-              final Calendar calendar = calendars[index];
+              final Anvsy calendar = calendars[index];
               return Padding(
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: InkWell(

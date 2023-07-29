@@ -59,7 +59,7 @@ class SocialButton extends StatelessWidget {
                 builder: (context) => BirthDayScreen(user: user)));
       } else {
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => MainScreen(user: user)));
+            MaterialPageRoute(builder: (context) => MainScreen(user: user,defaultIndex: 0,)));
       }
     }
   }

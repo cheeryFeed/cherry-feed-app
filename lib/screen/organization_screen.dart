@@ -146,7 +146,6 @@ class OrganizationScreen extends StatelessWidget {
                 text: '다음',
                 isHalf: false,
                 onPressed: () async {
-                  // print('onpresseed');
                   await requestLocationPermission();
                   await requestNotificationPermission();
                   await requestPhotosPermission();

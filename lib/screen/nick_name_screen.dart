@@ -22,16 +22,26 @@ class _NickNameScreenState extends State<NickNameScreen> {
   User user = User();
   final TextEditingController controller = TextEditingController();
   String _text = '';
-  TokenProvider tokenProvider = TokenProvider();
-
+  TokenProvider tokenProvider =  TokenProvider();
   Future<http.Response> nickNameCheck() async {
-    Uri uri = Uri.parse(ApiHost.API_HOST_DEV +
-        '/api/v1/users/duplicationcheck/nickname?nickname=' +
-        _text);
+    Uri uri = Uri.parse('${ApiHost.API_HOST_DEV}/api/v1/users/duplicationcheck/nickname?nickname=$_text');
     final headers = {
       'Content-Type': 'application/json; charset=utf-8',
     };
     http.Response response = await http.get(uri, headers: headers);
+    return response;
+  }
+
+  Future<http.Response> updateUserData() async {
+    await tokenProvider.init();
+    String? _accessToken = await tokenProvider.getAccessToken();
+    Uri uri = Uri.parse(ApiHost.API_HOST_DEV +
+        '/api/v1/users');
+    final headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Authorization': 'Bearer $_accessToken',
+    };
+    http.Response response = await http.put(uri, headers: headers,body: jsonEncode({'nickname':user.nickname}));
     return response;
   }
 
@@ -136,6 +146,7 @@ class _NickNameScreenState extends State<NickNameScreen> {
   }
 
   void onPressed() {
+    updateUserData();
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (builder) => BirthDayScreen(user: user,),

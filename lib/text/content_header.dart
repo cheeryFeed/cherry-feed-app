@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 class ContentHeader extends StatelessWidget {
   final String title;
   final String description;
-  const ContentHeader({Key? key, required this.title, required this.description}) : super(key: key);
+  final Widget wordOnClick;
+  const ContentHeader({Key? key, required this.title, required this.description, required this.wordOnClick}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +57,7 @@ class ContentHeader extends StatelessWidget {
                     )
                 ),
                 onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> CalendarScreen()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=> wordOnClick));
                 },
               ),
             ),
