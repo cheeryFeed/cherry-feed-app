@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
 import 'package:cherry_feed/date_dialog.dart';
-import 'package:cherry_feed/screen/calendar_screen.dart';
+import 'package:cherry_feed/screen/anvsy_screen.dart';
 import 'package:cherry_feed/screen/cover_img.dart';
 import 'package:cherry_feed/text_edit/title_input.dart';
 import 'package:cherry_feed/utils/api_host.dart';
@@ -17,17 +17,17 @@ import 'package:intl/intl.dart';
 
 import '../models/anvsy/anvsy.dart';
 
-class CalendarCreateScreen extends StatefulWidget {
+class AnvsyCreateScreen extends StatefulWidget {
   final int status;
 
-  const CalendarCreateScreen({Key? key, required this.status})
+  const AnvsyCreateScreen({Key? key, required this.status})
       : super(key: key);
 
   @override
-  State<CalendarCreateScreen> createState() => _CalendarCreateScreenState();
+  State<AnvsyCreateScreen> createState() => _AnvsyCreateScreenState();
 }
 
-class _CalendarCreateScreenState extends State<CalendarCreateScreen> {
+class _AnvsyCreateScreenState extends State<AnvsyCreateScreen> {
   DateTime anvsyAt = DateTime.now();
   DateFormat formatter = DateFormat('yy년 MM월 dd일');
   DateFormat formatJson = DateFormat('yyyy-MM-dd');
@@ -310,7 +310,7 @@ class _CalendarCreateScreenState extends State<CalendarCreateScreen> {
     if (response.statusCode == 200) {
       // 요청이 성공했을 경우
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => CalendarScreen()));
+          context, MaterialPageRoute(builder: (context) => AnvsyScreen()));
     } else {
       // 요청이 실패했을 경우
       showDialog(

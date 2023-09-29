@@ -29,7 +29,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       // 110 - 상태바의 크기.
       toolbarHeight: (110 - MediaQuery.of(context).padding.top),
       bottom: isBorder ? PreferredSize(
-        preferredSize: Size.fromHeight(1),
+        preferredSize: const Size.fromHeight(1),
         child: Container(
           decoration: BoxDecoration(
             border: Border(
@@ -38,8 +38,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
-          padding: EdgeInsets.only(left: 190, right: 190),
-          child: SizedBox(height: 1),
+          padding: const EdgeInsets.only(left: 190, right: 190),
+          child: const SizedBox(height: 1),
         ),
       ) : null,
     );

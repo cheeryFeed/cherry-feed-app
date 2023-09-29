@@ -32,9 +32,9 @@ class _TextEditWidgetState extends State<TextEditWidget> {
     return GestureDetector(
       onTap: _showEditDialog,
       child: SizedBox(
-        width: 150,
+        width: 196,
         child: Text(
-          _updatedValue == '' ? '장소를 입력해 주세요.' : _updatedValue,
+          _updatedValue == '' ? '텍스트를 입력해 주세요.' : _updatedValue,
           overflow: TextOverflow.ellipsis,
           style: widget.style,
         ),

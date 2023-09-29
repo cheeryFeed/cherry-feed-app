@@ -1,10 +1,9 @@
 import 'dart:convert';
 
 import 'package:cherry_feed/button/connect_button.dart';
-import 'package:cherry_feed/button/main_calendar_button.dart';
+import 'package:cherry_feed/button/main_anvsy_button.dart';
 import 'package:cherry_feed/button/main_plan_button.dart';
-import 'package:cherry_feed/models/anvsy/anvsy.dart';
-import 'package:cherry_feed/screen/calendar_screen.dart';
+import 'package:cherry_feed/screen/anvsy_screen.dart';
 import 'package:cherry_feed/screen/main_screen.dart';
 import 'package:cherry_feed/screen/plan_screen.dart';
 import 'package:cherry_feed/slider/main_recommendation_slider.dart';
@@ -23,22 +22,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  User? _user;
-  late List<Anvsy> calendars;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchUser().then((user) {
-      setState(() {
-        _user = user;
-      });
-    }).catchError((error) {
-      print('Error: $error');
-      // 에러 처리를 원하는 대로 구현 가능
-    });
-  }
-
   Future<User> _fetchUser() async {
     TokenProvider tokenProvider = TokenProvider();
     await tokenProvider.init();
@@ -49,45 +32,56 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     return User.fromJson(json.decode(utf8.decode(response.bodyBytes)));
   }
-
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        // Main Column
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (_user == null)
-                Center(child: CircularProgressIndicator())
-              else if (_user!.coupleId == null)
-                ConnectButton()
-              else
-                SizedBox(),
-              SizedBox(height: 20),
-              ContentHeader(title: '기념일', description: '우리가 함께 하는 날', wordOnClick: CalendarScreen()),
-              MainCalendarButton(),
-              SizedBox(height: 52),
-              ContentHeader(
-                title: '계획',
-                description: '우리가 함께 하는 콘텐츠',
-                wordOnClick: MainScreen(user: _user!, defaultIndex: 1),
+    return FutureBuilder<User>(
+      future: _fetchUser(),
+      builder: (context,snapshot) {
+        if(snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if(snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'),);
+        }
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            // Main Column
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (snapshot.data?.coupleId == null)
+                    ConnectButton(user:snapshot.data!)
+                  else
+                    SizedBox(),
+                  SizedBox(height: 20),
+                  ContentHeader(title: '기념일',
+                      description: '우리가 함께 하는 날',
+                      wordOnClick: AnvsyScreen()),
+                  MainAnvsyButton(),
+                  SizedBox(height: 52),
+                  ContentHeader(
+                    title: '계획',
+                    description: '우리가 함께 하는 콘텐츠',
+                    wordOnClick: MainScreen(user: snapshot.data!, defaultIndex: 1),
+                  ),
+                  SizedBox(height: 12),
+                  MainPlanButton(),
+                  SizedBox(height: 52),
+                  ContentHeader(title: '추천',
+                    description: '다른 연인들의 콘텐츠',
+                    wordOnClick: PlanScreen(),),
+                  SizedBox(height: 12),
+                  MainRecommendationSlider(),
+                ],
               ),
-              SizedBox(height: 12),
-              MainPlanButton(),
-              SizedBox(height: 52),
-              ContentHeader(title: '추천', description: '다른 연인들의 콘텐츠', wordOnClick: PlanScreen(),),
-              SizedBox(height: 12),
-              MainRecommendationSlider(),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      }
     );
   }
 }

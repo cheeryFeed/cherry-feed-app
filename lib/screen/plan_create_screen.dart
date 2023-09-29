@@ -1,13 +1,19 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
-import 'package:cherry_feed/checkbox/check_box_with_image.dart';
+import 'package:cherry_feed/checkbox/add_button_widget.dart';
+import 'package:cherry_feed/checkbox/check_box_list_item.dart';
 import 'package:cherry_feed/date_dialog.dart';
+import 'package:cherry_feed/image/image_container.dart';
+import 'package:cherry_feed/models/calendar/calendar.dart';
+import 'package:cherry_feed/models/calendar/check_list.dart';
 import 'package:cherry_feed/models/plan/plan.dart';
-import 'package:cherry_feed/screen/calendar_screen.dart';
+import 'package:cherry_feed/screen/plan_screen.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:cherry_feed/screen/cover_img.dart';
-import 'package:cherry_feed/text_edit/text_edit.dart';
 import 'package:cherry_feed/text_edit/text_editor.dart';
 import 'package:cherry_feed/text_edit/title_input.dart';
 import 'package:cherry_feed/utils/api_host.dart';
@@ -15,9 +21,9 @@ import 'package:cherry_feed/utils/token_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-
-import '../models/anvsy/anvsy.dart';
+import 'package:mime/mime.dart';
 
 class PlanCreateScreen extends StatefulWidget {
   const PlanCreateScreen({Key? key}) : super(key: key);
@@ -27,21 +33,25 @@ class PlanCreateScreen extends StatefulWidget {
 }
 
 class _PlanCreateScreen extends State<PlanCreateScreen> {
-  DateTime anvsyAt = DateTime.now();
+  String? title;
   DateFormat formatter = DateFormat('yy년 MM월 dd일');
   DateFormat formatJson = DateFormat('yyyy.MM.dd');
   DateTime? startAt;
   DateTime? endAt;
   int? id;
-  String? anvsyNm;
-  int? imgId;
+  int imgId = 0;
   bool? isChecked;
   late String _accessToken;
-  Status initStatus = Status.scheduled;
+  Status status = Status.scheduled;
   String location = '';
   String? checkedText;
+  String content = '';
+  List<File?> imgList = [];
   final TextEditingController controller = TextEditingController();
-
+  final TextEditingController contentController = TextEditingController();
+  List<CheckList> checklistItems = []; // 체크리스트 아이템을 저장할 리스트
+  final TextEditingController checklistController = TextEditingController();
+  File? img;
   @override
   void initState() {
     super.initState();
@@ -55,22 +65,23 @@ class _PlanCreateScreen extends State<PlanCreateScreen> {
     setState(() {
       _accessToken = token.toString();
       id = null;
-      anvsyNm = null;
       imgId = 0;
       startAt = null;
       endAt = null;
       isChecked = false;
+      title = null;
       location = '없음';
       print('TOKEN : : ${_accessToken}');
-      initStatus = Status.scheduled;
+      status = Status.scheduled;
+      checklistItems.add(new CheckList(content: '', isFinish: false));
     });
   }
 
   void setTitle(value) {
     setState(() {
-      anvsyNm = value;
+      title = value;
     });
-    print('${anvsyNm} , ${imgId}');
+    print('${title} , ${imgId},${checklistItems.length}, ${content}');
   }
 
   @override
@@ -82,16 +93,17 @@ class _PlanCreateScreen extends State<PlanCreateScreen> {
         isBorder: false,
       ),
       body: SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
         child: SizedBox(
           height: 2000,
           width: MediaQuery.of(context).size.width,
           child: Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               CoverImg(onImageUploaded: onImageUploaded),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Padding(
@@ -118,7 +130,7 @@ class _PlanCreateScreen extends State<PlanCreateScreen> {
                                   'assets/images/flag.png',
                                   '진행 상황',
                                   rightStatusWidget(
-                                      initStatus, _showStatusModal)),
+                                      status, _showStatusModal)),
                               imageAndTextWidget(
                                   'assets/images/calendar.png',
                                   '진행 날짜',
@@ -146,59 +158,120 @@ class _PlanCreateScreen extends State<PlanCreateScreen> {
                         SizedBox(
                           height: 28,
                         ),
-                        SizedBox(
-                          height: 150,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                '• 체크리스트',
-                                style: TextStyle(
-                                    fontSize: 26, fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.left,
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    height: 30,
-                                    child: CheckBoxWithImage(
-                                      isChecked: isChecked == null
-                                          ? false
-                                          : isChecked!,
-                                      onChanged: _isCheckedFunction,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 16,
-                                  ),
-                                  SizedBox(
-                                    height: 30,
-                                    width: 280,
-                                    child: rightTextWidget(_onCheckedTextChange, false),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        )
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const Text(
+                              '• 체크리스트',
+                              style: TextStyle(
+                                  fontSize: 26, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.left,
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: checklistItems.length,
+                              itemBuilder: (context, index) {
+                                CheckList itemData = checklistItems[index];
+                                return CheckBoxListItem(
+                                  text: itemData.content,
+                                  isChecked: itemData.isFinish,
+                                  onCheckedChanged: (isChecked) {
+                                    if (isChecked != null) {
+                                      setState(() {
+                                        itemData.isFinish = isChecked!;
+                                      });
+                                    }
+                                  },
+                                  isUnderLine: false,
+                                  onTextChanged: (text) {
+                                    setState(() {
+                                      itemData.content = text;
+                                    });
+                                  },
+                                  removeFunction: () =>
+                                      removeChecklistItem(index),
+                                );
+                              },
+                            ),
+                            // 새로운 체크리스트 아이템 추가 기능
+                            AddButtonWidget(
+                                onTap: addChecklistItem, imgSoruce: 'assets/images/note.png', textHint: '목록 추가하기',),
+                          ],
+                        ),
                       ],
                     ),
                     SizedBox(
-                      height: 300,
+                      height: 32,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 40),
-                      child: NextButton(
-                        backgroundColor: Color(0xffEE4545),
-                        textColor: Color(0xffFFFFFF),
-                        isHalf: false,
-                        text: '저장',
-                        onPressed: onPressed,
-                      ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Text(
+                          '• 다이어리',
+                          style: TextStyle(
+                              fontSize: 26, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.left,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Theme(
+                          data: ThemeData(
+                            textSelectionTheme: TextSelectionThemeData(
+                              cursorColor: Theme.of(context).primaryColor, // 원하는 커서 색상으로 변경
+                            ),
+                          ),
+                          child: TextFormField(
+                            maxLines: null,
+                            controller: contentController,
+                            onChanged: saveContents,
+                            decoration: InputDecoration(
+                              hintText: '오늘 있었던 일을 기록해 주세요.',
+                              border: UnderlineInputBorder(
+                                borderSide: BorderSide.none, // 파란색 밑줄 없애기
+                              ),
+                              // 나머지 필요한 설정들 추가
+                            ),
+                          ),
+                        ),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: imgList.length,
+                          itemBuilder: (context, index) {
+                            File? img = imgList[index];
+                            return ImageContainer(img: img,);
+                          },
+                        ),
+                        AddButtonWidget(
+                            onTap: _getImageFromGallery, imgSoruce: 'assets/images/picture.png', textHint: '사진 추가하기',),
+
+                      ],
+                    ),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        NextButton(
+                          backgroundColor: Color(0xffFFFFFF),
+                          textColor: Color(0xffEE4545),
+                          isHalf: true,
+                          text: '취소',
+                          onPressed: onPressed,
+                        ),
+                        NextButton(
+                          backgroundColor: Color(0xffEE4545),
+                          textColor: Color(0xffFFFFFF),
+                          isHalf: true,
+                          text: '저장',
+                          onPressed: onPressed,
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -208,6 +281,12 @@ class _PlanCreateScreen extends State<PlanCreateScreen> {
         ),
       ),
     );
+  }
+
+  void saveContents(String contents) {
+    setState(() {
+      this.content = contents;
+    });
   }
 
   Widget buildTab(String text, bool isActive) {
@@ -231,45 +310,25 @@ class _PlanCreateScreen extends State<PlanCreateScreen> {
     );
   }
 
-  void _onCheckedTextChange(String checkedText) {
-    setState(() {
-      this.checkedText = checkedText;
-    });
-  }
-
-  void _isCheckedFunction(bool? isChecked) {
-    if (isChecked != null) {
-      setState(() {
-        this.isChecked = isChecked;
-      });
-    }
-  }
-
   void onPressed() async {
-    // state를 json 형태로 변환
-    Anvsy calendar = Anvsy(
-      anvsyAt: anvsyAt,
-      anvsyNm: anvsyNm.toString(),
-      imgId: imgId,
-      status: 1,
-      id: null,
-    );
-    String anvsyAtString = DateFormat('yyyyMMdd').format(anvsyAt);
-    final json = {...calendar.toJson(), 'anvsyAt': anvsyAtString.toString()};
-    print('쏜다 : : ${json}');
-    final url = ApiHost.API_HOST_DEV + '/api/v1/anvsy';
+    Calendar calendar = Calendar(id: null, alarmAt: null, allDay: null, checkList: checklistItems, content: content, endAt: endAt, imgId: imgId, location: location, startAt: startAt, status: status, title: title, type: null);
+    String? startAtString = startAt == null ? null : DateFormat('yyyyMMdd').format(startAt!);
+    String? endAtString = endAt == null ? null : DateFormat('yyyyMMdd').format(endAt!);
+    final json = {...calendar.toJson(), 'startAt' : startAtString, 'endAt' : endAtString, 'status' : status.name};
+    print('REUQEST JSON : : : ${json}');
+    final url = ApiHost.API_HOST_DEV + '/api/v1/calender';
     final headers = {
       'Content-type': 'application/json;charset=utf-8',
       'Authorization': 'Bearer ${_accessToken}',
     };
     final response = await http.post(Uri.parse(url),
         headers: headers, body: jsonEncode(json));
-    print(response.body);
+    print(jsonDecode(response.body));
     // print(response.);
     if (response.statusCode == 200) {
       // 요청이 성공했을 경우
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => CalendarScreen()));
+          context, MaterialPageRoute(builder: (context) => PlanScreen()));
     } else {
       // 요청이 실패했을 경우
       showDialog(
@@ -286,6 +345,73 @@ class _PlanCreateScreen extends State<PlanCreateScreen> {
         ),
       );
     }
+  }
+
+  Future<void> _getImageFromGallery() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      final response = await uploadFileToServer(File(pickedFile.path));
+      if (response != null) {
+        onContentsImageUploaded(response);
+        setState(() {
+          img = File(pickedFile.path);
+          imgList.add(img);
+        });
+      }
+    }
+  }
+
+  Future<http.MultipartFile> getMultipartFileFromImageFile(File file) async {
+    final filename = file.path.split('/').last;
+    final mimeType = lookupMimeType(file.path);
+    final stream = StreamView<List<int>>(file.openRead());
+    final length = await file.length();
+
+    return http.MultipartFile(
+      'image',
+      stream,
+      length,
+      filename: filename,
+      contentType: MediaType.parse(mimeType!),
+    );
+  }
+
+  Future<int?> uploadFileToServer(File file) async {
+    final url = Uri.parse('${ApiHost.API_HOST_DEV}/api/v1/file/file-system');
+    final request = http.MultipartRequest('POST', url);
+    final multipartFile = await getMultipartFileFromImageFile(file);
+    request.files.add(multipartFile);
+    final token = _accessToken;
+    request.headers['Authorization'] = 'Bearer $token';
+
+    final response = await request.send();
+    if (response.statusCode == 200) {
+      final jsonResponse = await response.stream.bytesToString(utf8);
+      final parsedResponse = json.decode(jsonResponse);
+      print(parsedResponse);
+      return parsedResponse['fileId'];
+    } else {
+      throw Exception('Failed to upload file');
+    }
+  }
+
+  // 체크리스트 추가 버튼을 누를 때 호출되는 메서드
+  void addChecklistItem() {
+    setState(() {
+      checklistItems.add(new CheckList(
+          content: '', isFinish: false)); // 새로운 체크리스트 아이템을 리스트에 추가
+      if (checklistController != null) {
+        checklistController.clear(); // 입력 필드를 비워줌
+      }
+    });
+  }
+
+  // 체크리스트 삭제 버튼을 누를 때 호출되는 메서드
+  void removeChecklistItem(int index) {
+    setState(() {
+      checklistItems.removeAt(index); // 해당 인덱스의 체크리스트 아이템을 리스트에서 삭제
+    });
   }
 
   Widget imageAndTextWidget(String imgSource, String text, Widget rightWidget) {
@@ -334,15 +460,17 @@ class _PlanCreateScreen extends State<PlanCreateScreen> {
     );
   }
 
-  Widget rightTextWidget(Function(String updatedValue) onClick,bool isUnderLine) {
+  Widget rightTextWidget(
+      Function(String updatedValue) onClick, bool isUnderLine) {
     return TextEditWidget(
       initialValue: this.location,
       onSave: onClick,
       style: Theme.of(context).textTheme.bodyText1?.copyWith(
-            fontSize: 20,
+            fontSize: 17,
             color: Colors.black,
             fontWeight: FontWeight.w100,
-            decoration: isUnderLine? TextDecoration.underline : TextDecoration.none,
+            decoration:
+                isUnderLine ? TextDecoration.underline : TextDecoration.none,
           ),
     );
   }
@@ -386,7 +514,7 @@ class _PlanCreateScreen extends State<PlanCreateScreen> {
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+                children: const [
                   Text(
                     '진행 날짜',
                     textAlign: TextAlign.left,
@@ -407,9 +535,9 @@ class _PlanCreateScreen extends State<PlanCreateScreen> {
               dateContentWidget(isStartAt: true),
               dateContentWidget(isStartAt: false),
               NextButton(
-                backgroundColor: Color(0xffEE4545),
-                textColor: Color(0xffFFFFFF),
-                isHalf: false,
+                backgroundColor: const Color(0xffEE4545),
+                textColor: const Color(0xffFFFFFF),
+                isHalf: true,
                 text: '저장',
                 onPressed: () => Navigator.pop(context),
               ),
@@ -523,7 +651,7 @@ class _PlanCreateScreen extends State<PlanCreateScreen> {
                       return GestureDetector(
                         onTap: () {
                           setState(() {
-                            initStatus = status;
+                            this.status = status;
                           });
                           Navigator.pop(context);
                         },
@@ -533,13 +661,13 @@ class _PlanCreateScreen extends State<PlanCreateScreen> {
                             Text(
                               status.toDisplayString(),
                               style: TextStyle(
-                                color: initStatus == status
+                                color: this.status == status
                                     ? const Color(0xffEE4545)
                                     : Colors.grey,
                                 fontSize: 20,
                               ),
                             ),
-                            if (initStatus == status)
+                            if (this.status == status)
                               const Icon(Icons.check, color: Color(0xffEE4545))
                           ],
                         ),
@@ -553,6 +681,13 @@ class _PlanCreateScreen extends State<PlanCreateScreen> {
         );
       },
     );
+  }
+  void onContentsImageUploaded(int? imgId) {
+    if (imgId != null) {
+      setState(() {
+        this.imgId = imgId;
+      });
+    }
   }
 
   void onImageUploaded(int? imgId) {

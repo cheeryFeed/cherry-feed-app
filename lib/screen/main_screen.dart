@@ -1,6 +1,8 @@
+import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/appbar/main_app_bar.dart';
 import 'package:cherry_feed/appbar/plan_app_bar.dart';
 import 'package:cherry_feed/models/user/user.dart';
+import 'package:cherry_feed/screen/anvsy_screen.dart';
 import 'package:cherry_feed/screen/calendar_screen.dart';
 import 'package:cherry_feed/screen/couple_screen.dart';
 import 'package:cherry_feed/screen/home_screen.dart';
@@ -11,7 +13,9 @@ import 'package:flutter/material.dart';
 class MainScreen extends StatefulWidget {
   final User user;
   final int defaultIndex;
-  const MainScreen({Key? key, required this.user,required this.defaultIndex}) : super(key: key);
+
+  const MainScreen({Key? key, required this.user, required this.defaultIndex})
+      : super(key: key);
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -26,6 +30,7 @@ class _MainScreenState extends State<MainScreen> {
     RecommendationScreen(),
     CoupleScreen(),
   ];
+
   @override
   void initState() {
     // TODO: implement initState
@@ -78,13 +83,55 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
+
   PreferredSizeWidget _buildAppBar() {
     switch (_currentIndex) {
+      // 홈
       case 0:
         return MainAppBar();
+      //계획
       case 1:
         return PlanAppBar();
+      //달력
       case 2:
+        return AppBar(
+          backgroundColor: Color(0xffFAFAFA),
+          centerTitle: false,
+          leadingWidth: 80,
+          leading: TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              '달력',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
+              ),
+              textAlign: TextAlign.left,
+            ),
+          ),
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(1),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Colors.grey[300]!,
+                  ),
+                ),
+              ),
+              padding: EdgeInsets.only(left: 190, right: 190),
+              child: SizedBox(height: 1),
+            ),
+          ),
+          elevation: 0.0,
+          toolbarHeight: (110 - MediaQuery.of(context).padding.top),
+        );
+      //추천
+      case 3:
+        return PlanAppBar();
+      //커플
+      default:
         return AppBar(
           title: Text('커플'),
           backgroundColor: Colors.pink,
@@ -95,8 +142,6 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ],
         );
-      default:
-        return PlanAppBar();
     }
   }
 }

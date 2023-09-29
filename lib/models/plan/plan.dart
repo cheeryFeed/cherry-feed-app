@@ -16,6 +16,7 @@ class Plan {
         required this.startDate,
         required this.endDate});
 
+
 }
 enum Status {
   all, // 전체
@@ -24,6 +25,8 @@ enum Status {
   completed, // 완료
   canceled, // 취소
 }
+
+
 
 extension StatusExtension on Status {
   String toDisplayString() {
@@ -45,13 +48,13 @@ extension StatusExtension on Status {
   Color toColor() {
     switch (this) {
       case Status.scheduled:
-        return Colors.blue;
+        return Color(0xffF09843);
       case Status.inProgress:
-        return Colors.green;
+        return Color(0xffEE4545);
       case Status.completed:
-        return Colors.grey;
+        return Color(0xff0D5DE6);
       case Status.canceled:
-        return Colors.red;
+        return Color(0xff6B41E3);
       default:
         return Colors.black;
     }

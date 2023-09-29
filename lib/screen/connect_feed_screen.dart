@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
 import 'package:cherry_feed/models/user/user.dart';
+import 'package:cherry_feed/screen/home_screen.dart';
 import 'package:cherry_feed/screen/main_screen.dart';
 import 'package:cherry_feed/text_edit/text_edit.dart';
+import 'package:cherry_feed/utils/api_host.dart';
 import 'package:cherry_feed/utils/token_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -22,10 +24,11 @@ class _ConnectFeedScreenState extends State<ConnectFeedScreen> {
   String _accessToken = "";
 
   late String labelCode;
+  String connectCode="";
   Future<void> sendDataToServer(User user) async {
     print(_accessToken);
 // access token과 refresh token 저장
-    final url = Uri.parse('http://localhost:8090/api/v1/users/kakao-join');
+    final url = Uri.parse('${ApiHost.API_HOST_DEV}/api/v1/users/kakao-join');
     final body = json.encode(user.toJson());
     final headers = {
       'Content-Type': 'application/json',
@@ -46,9 +49,19 @@ class _ConnectFeedScreenState extends State<ConnectFeedScreen> {
   }
 
   Future<String> getConnectCode() async {
-    Uri uri = Uri.parse('http://localhost:8090/api/v1/users/create/connectcode');
+    Uri uri = Uri.parse(ApiHost.API_HOST_DEV+'/api/v1/users/create/connectcode');
     http.Response response = await http.get(uri);
-    print(response.body);
+    return response.body;
+  }
+
+  Future<String> connectCouple(String connectCode) async {
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $_accessToken'
+    };
+    Uri uri = Uri.parse('${ApiHost.API_HOST_DEV}/api/v1/connection');
+    http.Response response = await http.post(uri,headers: headers, body:{'connectCode': connectCode});
+    print('connectCode : : : ${response.body}');
     return response.body;
   }
 
@@ -78,70 +91,93 @@ class _ConnectFeedScreenState extends State<ConnectFeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffFAFAFA),
-      appBar: CustomAppBar(isShow: true,isBorder: false,),
+      backgroundColor: const Color(0xffFAFAFA),
+      appBar: const CustomAppBar(isShow: true,isBorder: false,),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding:const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Text(
-                  '체리피드를 함께 관리할 \n'
-                      '상대방과 연결해주세요',
-                  style: Theme.of(context).textTheme.bodyText1,
-                  textAlign: TextAlign.left,
-                ),
-              ),
-            ),
             SizedBox(
-              height: 300,
-              child: Image.asset('assets/images/heart_asset.png'),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Text(
-                  '내 연결 코드',
-                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                    fontSize: 17,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              child: TextEdit(
-                enabled: false,
-                textHint: labelCode,
-                controller: TextEditingController(),
-                onChange: (String){},
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 32),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Text(
-                  '상대방 연결 코드',
-                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                    fontSize: 17,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              child: TextEdit(
-                enabled: true,
-                textHint:'상대방의 코드를 입력 해 주세요.',
-                controller: TextEditingController(),
-                onChange: (String){},
-              ),
-            ),
+              height: 600,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: Text(
+                          '체리피드를 함께 관리할 \n'
+                              '상대방과 연결해주세요',
+                          style: Theme.of(context).textTheme.bodyText1,
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 300,
+                      child: Image.asset('assets/images/heart_asset.png'),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: Text(
+                          '내 연결 코드',
+                          style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                            fontSize: 17,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      child: TextEdit(
+                        enabled: false,
+                        textHint: labelCode,
+                        controller: TextEditingController(),
+                        onChange: (String a)=> this.connectCode = a,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 32),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: Text(
+                          '상대방 연결 코드',
+                          style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                            fontSize: 17,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      child: TextEdit(
+                        enabled: true,
+                        textHint:'상대방의 코드를 입력 해 주세요.',
+                        controller: TextEditingController(),
+                        onChange: (String){},
+                      ),
+                    ),
+                    SizedBox(height: 100,),
+                    SizedBox(
+                      child: NextButton(
+                          text: '확인',
+                          onPressed: () => {
+                            connectCouple(connectCode),
+                            Navigator.push(context, MaterialPageRoute(builder: ((context) => MainScreen(user:widget.user, defaultIndex: 0,))))
+                          },
+                          isHalf: false,
+                          backgroundColor: const Color(0xffEE4545),
+                          textColor: Colors.white),
+                    ),
 
-            Container(
+
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
               width: 500,
               child: Row(
                 children: [

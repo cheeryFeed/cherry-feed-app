@@ -1,6 +1,6 @@
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
-import 'package:cherry_feed/screen/calendar_screen.dart';
+import 'package:cherry_feed/screen/anvsy_screen.dart';
 import 'package:cherry_feed/utils/api_host.dart';
 import 'package:cherry_feed/utils/cherry_feed_util.dart';
 import 'package:cherry_feed/utils/token_provider.dart';
@@ -10,17 +10,17 @@ import 'package:http/http.dart' as http;
 
 import '../models/anvsy/anvsy.dart';
 
-class CalendarDetailScreen extends StatefulWidget {
+class AnvsyDetailScreen extends StatefulWidget {
   final Anvsy calendar;
 
-  const CalendarDetailScreen({Key? key, required this.calendar})
+  const AnvsyDetailScreen({Key? key, required this.calendar})
       : super(key: key);
 
   @override
-  State<CalendarDetailScreen> createState() => _CalendarDetailScreenState();
+  State<AnvsyDetailScreen> createState() => _AnvsyDetailScreenState();
 }
 
-class _CalendarDetailScreenState extends State<CalendarDetailScreen> {
+class _AnvsyDetailScreenState extends State<AnvsyDetailScreen> {
   @override
   void initState() {
     super.initState();
@@ -208,7 +208,7 @@ class _CalendarDetailScreenState extends State<CalendarDetailScreen> {
     await http.delete(uri, headers: {
       'Authorization': 'Bearer $token',
     });
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>CalendarScreen()));
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>AnvsyScreen()));
   }
 
   Widget buildDDayList(BuildContext context, DateTime targetDate) {

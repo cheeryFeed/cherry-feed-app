@@ -1,15 +1,15 @@
 import 'dart:convert';
 
 import 'package:cherry_feed/models/anvsy/anvsy.dart';
-import 'package:cherry_feed/screen/calendar_create_screen.dart';
+import 'package:cherry_feed/screen/anvsy_create_screen.dart';
 import 'package:cherry_feed/utils/api_host.dart';
 import 'package:cherry_feed/utils/token_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-class MainCalendarButton extends StatelessWidget {
-  const MainCalendarButton({Key? key}) : super(key: key);
+class MainAnvsyButton extends StatelessWidget {
+  const MainAnvsyButton({Key? key}) : super(key: key);
 
   Future<List<Anvsy>> _fetchCalendars() async {
     TokenProvider tokenProvider = TokenProvider();
@@ -42,7 +42,7 @@ class MainCalendarButton extends StatelessWidget {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => CalendarCreateScreen(status: 0)));
+                builder: (context) => AnvsyCreateScreen(status: 0)));
       },
       child: Container(
         height: 320,
@@ -172,7 +172,7 @@ class MainCalendarButton extends StatelessWidget {
                       ],
                       stops: [0, 1],
                     ),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: Color(0x29000000),
                         offset: Offset(4, 4),
@@ -191,17 +191,16 @@ class MainCalendarButton extends StatelessWidget {
                       Container(
                         height: 240,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
+                          borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(13),
                             topRight: Radius.circular(13),
                           ),
                           image: data[index].imgId != null
                               ? DecorationImage(
-                                  image: NetworkImage(ApiHost.API_HOST_DEV +
-                                      '/api/v1/file/file-system/${data[index].imgId}'),
+                                  image: NetworkImage('${ApiHost.API_HOST_DEV}/api/v1/file/file-system/${data[index].imgId}'),
                                   fit: BoxFit.cover,
                                 )
-                              : DecorationImage(
+                              : const DecorationImage(
                                   image: AssetImage(
                                       'assets/images/dummy/ex_8.jpg'),
                                   fit: BoxFit.cover,

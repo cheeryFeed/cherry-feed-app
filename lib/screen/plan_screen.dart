@@ -1,5 +1,12 @@
+import 'dart:convert';
+
+import 'package:cherry_feed/models/calendar/calendar.dart';
 import 'package:cherry_feed/models/plan/plan.dart';
+import 'package:cherry_feed/utils/api_host.dart';
+import 'package:cherry_feed/utils/token_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class PlanScreen extends StatefulWidget {
   const PlanScreen({Key? key}) : super(key: key);
@@ -10,99 +17,33 @@ class PlanScreen extends StatefulWidget {
 
 class _PlanScreenState extends State<PlanScreen> {
   late Status initStatus;
-
   @override
   void initState() {
     initStatus = Status.all;
+    // _fetchCalendar();
     super.initState();
   }
-
-  @override
-  Widget build(BuildContext context) {
-    void _showModalBottomSheet(BuildContext context) {
-      showModalBottomSheet<void>(
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        builder: (BuildContext context) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30.0),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text('진행 상황',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold)),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: Status.values.map((status) {
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              initStatus = status;
-                            });
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                status.toDisplayString(),
-                                style: TextStyle(
-                                  color: initStatus == status
-                                      ? const Color(0xffEE4545)
-                                      : Colors.grey,
-                                  fontSize: 20,
-                                ),
-                              ),
-                              if (initStatus == status)
-                                const Icon(Icons.check, color: Color(0xffEE4545))
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      );
+  Future<List<Calendar>> _fetchCalendar() async {
+    TokenProvider tokenProvider = TokenProvider();
+    await tokenProvider.init();
+    final token = await tokenProvider.getAccessToken();
+    Uri uri = Uri.parse('${ApiHost.API_HOST_DEV}/api/v1/calender');
+    
+    http.Response response = await http.get(uri, headers: {
+      'Authorization': 'Bearer $token',
+    }).catchError((error) => {print(' error : ${error}')});
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+      print(data);
+      return data.map((e) => Calendar.fromJson(e)).toList();
+    } else {
+      print(response.body);
+      throw Exception('Failed to load calendars');
     }
 
-    List<Plan> planList = [
-      Plan(
-        name: '동대문디자인프라자',
-        imagePath: 'assets/images/dummy/ex_1.jpg',
-        status: Status.inProgress,
-        startDate: '23.04.01',
-        endDate: '23.04.30',
-      ),
-      Plan(
-        name: '제주 아르떼뮤지엄',
-        imagePath: 'assets/images/dummy/ex_2.jpg',
-        status: Status.scheduled,
-        startDate: '23.03.01',
-        endDate: '23.03.31',
-      ),
-      Plan(
-        name: '서소문성지역사박물관',
-        imagePath: 'assets/images/dummy/ex_3.jpg',
-        status: Status.canceled,
-        startDate: '23.05.01',
-        endDate: '23.05.31',
-      ),
-      // 나머지 7개의 Plan 객체도 생성하여 planList에 추가하면 됩니다.
-    ];
+  }
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -143,93 +84,162 @@ class _PlanScreenState extends State<PlanScreen> {
           ),
           const SizedBox(height: 12),
           Expanded(
-            child: ListView.builder(
-              itemCount: planList.length,
-              itemBuilder: (context, index) {
-                Plan plan = planList[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(13),
-                      side: const BorderSide(
-                        color: Colors.white,
-                        width: 1,
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        children: [
-                          Container(
-                            height: 110,
-                            width: 110,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(plan.imagePath),
-                                fit: BoxFit.cover,
-                              ),
-                              borderRadius: BorderRadius.circular(13),
-                            ),
+            child: FutureBuilder<List<Calendar>>(
+              future: _fetchCalendar(),
+              builder: (BuildContext context, snapshot) {
+                DateFormat format = new DateFormat('yyyy-MM-dd');
+                if(snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if(snapshot.hasData) {
+                  return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(13),
+                          side: const BorderSide(
+                            color: Colors.white,
+                            width: 1,
                           ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
                             children: [
-                              Row(
-                                children: [
-                                  Icon(Icons.circle,
-                                      size: 10, color: Color(0xffEE4545)),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    plan.status.toDisplayString(),
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w400,
-                                      color: Color(0xffEE4545),
-                                    ),
+                              Container(
+                                height: 110,
+                                width: 110,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: NetworkImage(ApiHost.API_HOST_DEV +
+                                        '/api/v1/file/file-system/${snapshot.data![index].imgId}'),
+                                    fit: BoxFit.cover,
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                plan.name,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                                  borderRadius: BorderRadius.circular(13),
                                 ),
                               ),
-                              const SizedBox(
-                                height: 12,
+                              SizedBox(
+                                width: 20,
                               ),
-                              Row(
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(Icons.calendar_today,
-                                      color: Colors.grey),
-                                  const SizedBox(width: 8),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.circle,
+                                          size: 10, color: snapshot.data![index].status!.toColor()),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        snapshot.data![index].status!.toDisplayString(),
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w400,
+                                          color: snapshot.data![index].status!.toColor(),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
                                   Text(
-                                    '${plan.startDate} ~ ${plan.endDate}',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
+                                    snapshot.data![index].title == null ? '무제' : snapshot.data![index].title!,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
                                     ),
+                                  ),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.calendar_today,
+                                          color: Colors.grey),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        '${format.format(snapshot.data![index].startAt!)} ~ ${format.format(snapshot.data![index].startAt!)}',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                );
+                  );
+                }
+                return CircularProgressIndicator();
               },
             ),
           ),
         ],
       ),
+    );
+  }
+
+  void _showModalBottomSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30.0),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('진행 상황',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold)),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: Status.values.map((status) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            initStatus = status;
+                          });
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              status.toDisplayString(),
+                              style: TextStyle(
+                                color: initStatus == status
+                                    ? const Color(0xffEE4545)
+                                    : Colors.grey,
+                                fontSize: 20,
+                              ),
+                            ),
+                            if (initStatus == status)
+                              const Icon(Icons.check, color: Color(0xffEE4545))
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

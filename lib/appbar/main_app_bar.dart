@@ -38,8 +38,8 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
-          padding: EdgeInsets.only(left: 190, right: 190),
-          child: SizedBox(height: 1),
+          padding: const EdgeInsets.only(left: 190, right: 190),
+          child: const SizedBox(height: 1),
         ),
       ),
       // 그림자 효과 없애기.

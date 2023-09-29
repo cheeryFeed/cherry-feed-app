@@ -1,6 +1,6 @@
 class CheckList {
-  final String content;
-  final bool isFinish;
+  String content;
+  bool isFinish;
 
   CheckList({
     required this.content,
