@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
-import 'package:cherry_feed/screen/anvsy_create_screen.dart';
-import 'package:cherry_feed/screen/anvsy_detail_screen.dart';
+import 'package:cherry_feed/screen/anvsy/anvsy_create_screen.dart';
+import 'package:cherry_feed/screen/anvsy/anvsy_detail_screen.dart';
 import 'package:cherry_feed/utils/api_host.dart';
 import 'package:cherry_feed/utils/cherry_feed_util.dart';
 import 'package:cherry_feed/utils/token_provider.dart';
@@ -90,7 +90,7 @@ class _AnvsyScreenState extends State<AnvsyScreen> {
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: InkWell(
                   onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=> AnvsyDetailScreen(calendar: calendar)));
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> AnvsyDetailScreen(anvsy: calendar)));
                   },
                   child: Container(
                     height: 140,

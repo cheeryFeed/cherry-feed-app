@@ -1,10 +1,9 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
 import 'package:cherry_feed/date_dialog.dart';
-import 'package:cherry_feed/screen/anvsy_screen.dart';
+import 'package:cherry_feed/screen/anvsy/anvsy_screen.dart';
 import 'package:cherry_feed/screen/cover_img.dart';
 import 'package:cherry_feed/text_edit/title_input.dart';
 import 'package:cherry_feed/utils/api_host.dart';
@@ -15,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-import '../models/anvsy/anvsy.dart';
+import '../../models/anvsy/anvsy.dart';
 
 class AnvsyCreateScreen extends StatefulWidget {
   final int status;
@@ -198,7 +197,7 @@ class _AnvsyCreateScreenState extends State<AnvsyCreateScreen> {
             SizedBox(
               height: 20,
             ),
-            CoverImg(onImageUploaded: onImageUploaded),
+            CoverImg(onImageUploaded: onImageUploaded,isActive: true,),
             SizedBox(
               height: 20,
             ),

@@ -1,4 +1,3 @@
-import 'package:cherry_feed/screen/anvsy_screen.dart';
 import 'package:flutter/material.dart';
 
 class ContentHeader extends StatelessWidget {

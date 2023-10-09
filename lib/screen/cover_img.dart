@@ -11,8 +11,15 @@ import 'package:http_parser/http_parser.dart';
 
 class CoverImg extends StatefulWidget {
   final void Function(int?) onImageUploaded;
+  final bool isActive;
+  final int? defaultImg;
 
-  const CoverImg({Key? key, required this.onImageUploaded}) : super(key: key);
+  const CoverImg(
+      {Key? key,
+      required this.onImageUploaded,
+      this.defaultImg,
+      required this.isActive})
+      : super(key: key);
 
   @override
   _CoverImgState createState() => _CoverImgState();
@@ -20,6 +27,7 @@ class CoverImg extends StatefulWidget {
 
 class _CoverImgState extends State<CoverImg> {
   File? _image;
+  DecorationImage? decorationImage;
   late String _accessToken;
 
   @override
@@ -27,6 +35,7 @@ class _CoverImgState extends State<CoverImg> {
     super.initState();
     _initWidget();
   }
+
   Future<void> _initWidget() async {
     final tokenProvider = TokenProvider();
     await tokenProvider.init();
@@ -35,18 +44,30 @@ class _CoverImgState extends State<CoverImg> {
     setState(() {
       _accessToken = token.toString();
     });
+
+    if (widget.defaultImg != null) {
+      setState(() {
+        decorationImage = DecorationImage(
+          image: NetworkImage(
+              '${ApiHost.API_HOST_DEV}/api/v1/file/file-system/${widget.defaultImg}'),
+          fit: BoxFit.cover,
+        );
+      });
+    }
   }
 
   Future<void> _getImageFromGallery() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      final response = await uploadFileToServer(File(pickedFile.path));
-      if (response != null) {
-        widget.onImageUploaded(response);
-        setState(() {
-          _image = File(pickedFile.path);
-        });
+    if (widget.isActive) {
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        final response = await uploadFileToServer(File(pickedFile.path));
+        if (response != null) {
+          widget.onImageUploaded(response);
+          setState(() {
+            _image = File(pickedFile.path);
+          });
+        }
       }
     }
   }
@@ -84,6 +105,7 @@ class _CoverImgState extends State<CoverImg> {
       throw Exception('Failed to upload file');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -91,38 +113,45 @@ class _CoverImgState extends State<CoverImg> {
       child: Container(
         height: 200,
         decoration: BoxDecoration(
-          image: _image == null
+          image: _image == null && decorationImage == null
               ? null
-              : DecorationImage(
-            image: FileImage(_image!),
-            fit: BoxFit.cover,
-          ),
+              : decorationImage ??
+                  DecorationImage(
+                    image: FileImage(_image!),
+                    fit: BoxFit.cover,
+                  ),
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.photo_camera_back_outlined,
-                size: 32,
-                color: Colors.white,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                '커버사진 변경',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w100,
+        child: widget.defaultImg == null
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.photo_camera_back_outlined,
+                      size: 32,
+                      color: Colors.white,
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      '커버사진 변경',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w100,
+                      ),
+                    ),
+                  ],
                 ),
+              )
+            : SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 200,
               ),
-            ],
-          ),
-        ),
       ),
     );
   }
 }
+
 class ImageUploadResponse {
   final String id;
   final String url;

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:cherry_feed/screen/birth_day_screen.dart';
+import 'package:cherry_feed/screen/join/birth_day_screen.dart';
 import 'package:cherry_feed/screen/main_screen.dart';
-import 'package:cherry_feed/screen/nick_name_screen.dart';
+import 'package:cherry_feed/screen/join/nick_name_screen.dart';
 import 'package:cherry_feed/utils/api_host.dart';
 import 'package:cherry_feed/utils/token_provider.dart';
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-import 'package:cherry_feed/screen/logo_screen.dart';
+import 'package:cherry_feed/screen/join/logo_screen.dart';
 import 'package:cherry_feed/themes/text_theme.dart';
 import 'package:cherry_feed/utils/token_provider.dart';
 import 'package:flutter/material.dart';

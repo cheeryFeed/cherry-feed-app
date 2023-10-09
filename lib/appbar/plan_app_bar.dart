@@ -1,5 +1,5 @@
 import 'package:cherry_feed/button/next_button.dart';
-import 'package:cherry_feed/screen/plan_create_screen.dart';
+import 'package:cherry_feed/screen/plan/plan_create_screen.dart';
 import 'package:flutter/material.dart';
 
 class PlanAppBar extends StatelessWidget implements PreferredSizeWidget {

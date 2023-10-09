@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cherry_feed/models/calendar/calendar.dart';
 import 'package:cherry_feed/models/plan/plan.dart';
+import 'package:cherry_feed/screen/plan/plan_detail_screen.dart';
 import 'package:cherry_feed/utils/api_host.dart';
 import 'package:cherry_feed/utils/token_provider.dart';
 import 'package:flutter/material.dart';
@@ -76,92 +77,99 @@ class MainPlanButton extends StatelessWidget {
           data.length,
               (index) => Row(
             children: [
-              Container(
-                  width: 340,
-                  height: 350,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFFF4F4F4),
-                        Color(0xFFFAFAFA),
+              GestureDetector(
+                onTap:()=> Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PlanDetailScreen(
+                            calendar: data[index]))),
+                child: Container(
+                    width: 340,
+                    height: 350,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFFF4F4F4),
+                          Color(0xFFFAFAFA),
+                        ],
+                        stops: [0, 1],
+                      ),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x29000000),
+                          offset: Offset(4, 4),
+                          blurRadius: 8,
+                        ),
                       ],
-                      stops: [0, 1],
-                    ),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x29000000),
-                        offset: Offset(4, 4),
-                        blurRadius: 8,
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 1,
                       ),
-                    ],
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 1,
+                      borderRadius: BorderRadius.circular(13),
                     ),
-                    borderRadius: BorderRadius.circular(13),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Container(
-                        height: 240,
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(13),
-                            topRight: Radius.circular(13),
-                          ),
-                          image: data[index].imgId != null
-                              ? DecorationImage(
-                            image: NetworkImage('${ApiHost.API_HOST_DEV}/api/v1/file/file-system/${data[index].imgId}'),
-                            fit: BoxFit.cover,
-                          )
-                              : const DecorationImage(
-                            image: AssetImage(
-                                'assets/images/dummy/ex_8.jpg'),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 16, left: 20, right: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              '${data[index].title}',
-                              style: TextStyle(
-                                fontSize: 22,
-                              ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          height: 240,
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(13),
+                              topRight: Radius.circular(13),
                             ),
-                            Text(
-                              '${data[index].status?.toDisplayString()}',
-                              style: TextStyle(
-                                fontSize: 19,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Row(
-                              children: [
-                                Icon(Icons.calendar_month_outlined, color: Colors.grey[500],),
-                                Text(
-                                  ' ${formatJson.format(data[index].startAt!)} ~ ${formatJson.format(data[index].endAt!)}',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey[500],
-                                  ),
-                                ),
-                              ],
+                            image: data[index].imgId != null
+                                ? DecorationImage(
+                              image: NetworkImage('${ApiHost.API_HOST_DEV}/api/v1/file/file-system/${data[index].imgId}'),
+                              fit: BoxFit.cover,
                             )
-                          ],
+                                : const DecorationImage(
+                              image: AssetImage(
+                                  'assets/images/dummy/ex_8.jpg'),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
-                      )
-                    ],
-                  )),
+                        Padding(
+                          padding: EdgeInsets.only(top: 16, left: 20, right: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                '${data[index].title}',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                ),
+                              ),
+                              Text(
+                                '${data[index].status?.toDisplayString()}',
+                                style: TextStyle(
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Row(
+                                children: [
+                                  Icon(Icons.calendar_month_outlined, color: Colors.grey[500],),
+                                  Text(
+                                    ' ${formatJson.format(data[index].startAt!)} ~ ${formatJson.format(data[index].endAt!)}',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    )),
+              ),
               SizedBox(width: 20),
             ],
           ),

@@ -1,12 +1,10 @@
-import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/appbar/main_app_bar.dart';
 import 'package:cherry_feed/appbar/plan_app_bar.dart';
 import 'package:cherry_feed/models/user/user.dart';
-import 'package:cherry_feed/screen/anvsy_screen.dart';
-import 'package:cherry_feed/screen/calendar_screen.dart';
+import 'package:cherry_feed/screen/calendar/calendar_screen.dart';
 import 'package:cherry_feed/screen/couple_screen.dart';
 import 'package:cherry_feed/screen/home_screen.dart';
-import 'package:cherry_feed/screen/plan_screen.dart';
+import 'package:cherry_feed/screen/plan/plan_screen.dart';
 import 'package:cherry_feed/screen/recommendation_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +21,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
-  final List<Widget> _children = [
+  final List<Widget> _children = const [
     HomeScreen(),
     PlanScreen(),
     CalendarScreen(),
@@ -56,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
         unselectedItemColor: Colors.grey,
         selectedFontSize: 12.0,
         unselectedFontSize: 12.0,
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
             label: '홈',
@@ -100,7 +98,7 @@ class _MainScreenState extends State<MainScreen> {
           leadingWidth: 80,
           leading: TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text(
+            child: const Text(
               '달력',
               style: TextStyle(
                 fontSize: 22,

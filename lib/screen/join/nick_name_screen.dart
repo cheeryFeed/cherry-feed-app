@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
 import 'package:cherry_feed/models/user/user.dart';
-import 'package:cherry_feed/screen/birth_day_screen.dart';
+import 'package:cherry_feed/screen/join/birth_day_screen.dart';
 import 'package:cherry_feed/text_edit/text_edit.dart';
 import 'package:cherry_feed/utils/api_host.dart';
 import 'package:cherry_feed/utils/token_provider.dart';

@@ -1,7 +1,7 @@
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
 import 'package:cherry_feed/models/user/user.dart';
-import 'package:cherry_feed/screen/connect_feed_screen.dart';
+import 'package:cherry_feed/screen/join/connect_feed_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 

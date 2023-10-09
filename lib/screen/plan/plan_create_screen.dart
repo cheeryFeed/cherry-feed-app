@@ -102,7 +102,7 @@ class _PlanCreateScreen extends State<PlanCreateScreen> {
               const SizedBox(
                 height: 20,
               ),
-              CoverImg(onImageUploaded: onImageUploaded),
+              CoverImg(onImageUploaded: onImageUploaded,isActive: true,),
               const SizedBox(
                 height: 20,
               ),
@@ -315,7 +315,7 @@ class _PlanCreateScreen extends State<PlanCreateScreen> {
     String? startAtString = startAt == null ? null : DateFormat('yyyyMMdd').format(startAt!);
     String? endAtString = endAt == null ? null : DateFormat('yyyyMMdd').format(endAt!);
     final json = {...calendar.toJson(), 'startAt' : startAtString, 'endAt' : endAtString, 'status' : status.name};
-    print('REUQEST JSON : : : ${json}');
+    print('REQUEST JSON : : : ${json}');
     final url = ApiHost.API_HOST_DEV + '/api/v1/calender';
     final headers = {
       'Content-type': 'application/json;charset=utf-8',

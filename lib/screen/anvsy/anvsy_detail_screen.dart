@@ -1,6 +1,7 @@
 import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
-import 'package:cherry_feed/screen/anvsy_screen.dart';
+import 'package:cherry_feed/screen/anvsy/anvsy_screen.dart';
+import 'package:cherry_feed/screen/anvsy/anvsy_update_screen.dart';
 import 'package:cherry_feed/utils/api_host.dart';
 import 'package:cherry_feed/utils/cherry_feed_util.dart';
 import 'package:cherry_feed/utils/token_provider.dart';
@@ -8,12 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
-import '../models/anvsy/anvsy.dart';
+import '../../models/anvsy/anvsy.dart';
 
 class AnvsyDetailScreen extends StatefulWidget {
-  final Anvsy calendar;
+  final Anvsy anvsy;
 
-  const AnvsyDetailScreen({Key? key, required this.calendar})
+  const AnvsyDetailScreen({Key? key, required this.anvsy})
       : super(key: key);
 
   @override
@@ -47,7 +48,7 @@ class _AnvsyDetailScreenState extends State<AnvsyDetailScreen> {
                   decoration: BoxDecoration(
                       image: DecorationImage(
                     image: NetworkImage(ApiHost.API_HOST_DEV +
-                        '/api/v1/file/file-system/${widget.calendar.imgId}'),
+                        '/api/v1/file/file-system/${widget.anvsy.imgId}'),
                     fit: BoxFit.cover,
                   )),
                 ),
@@ -70,7 +71,7 @@ class _AnvsyDetailScreenState extends State<AnvsyDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            widget.calendar.anvsyNm ?? '',
+            widget.anvsy.anvsyNm ?? '',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -89,7 +90,7 @@ class _AnvsyDetailScreenState extends State<AnvsyDetailScreen> {
                     fontWeight: FontWeight.w400),
               ),
               Text(
-                'D-${widget.calendar.anvsyAt!.difference(DateTime.now()).inDays}',
+                'D-${widget.anvsy.anvsyAt!.difference(DateTime.now()).inDays}',
                 style: TextStyle(
                   fontSize: 18,
                   color: Color(0xFFEE4545),
@@ -101,7 +102,7 @@ class _AnvsyDetailScreenState extends State<AnvsyDetailScreen> {
           SizedBox(
             width: MediaQuery.of(context).size.width,
             child: Text(
-              '${DateFormat('yyyy.MM.dd').format(widget.calendar.anvsyAt!)}${CherryFeedUtil.weekdayToString(widget.calendar.anvsyAt!.weekday)}',
+              '${DateFormat('yyyy.MM.dd').format(widget.anvsy.anvsyAt!)}${CherryFeedUtil.weekdayToString(widget.anvsy.anvsyAt!.weekday)}',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey,
@@ -121,7 +122,7 @@ class _AnvsyDetailScreenState extends State<AnvsyDetailScreen> {
           ),
           SizedBox(
               height: 300,
-              child: buildDDayList(context, widget.calendar.anvsyAt!)),
+              child: buildDDayList(context, widget.anvsy.anvsyAt!)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -189,7 +190,10 @@ class _AnvsyDetailScreenState extends State<AnvsyDetailScreen> {
               ),
               NextButton(
                 text: '수정',
-                onPressed: () {},
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AnvsyUpdateScreen(anvsy: widget.anvsy))),
                 isHalf: true,
                 backgroundColor: Color(0xffEE4545),
                 textColor: Colors.white,
@@ -204,7 +208,7 @@ class _AnvsyDetailScreenState extends State<AnvsyDetailScreen> {
     final tokenProvider = TokenProvider();
     await tokenProvider.init();
     final token = await tokenProvider.getAccessToken();
-    Uri uri = Uri.parse('${ApiHost.API_HOST_DEV}/api/v1/anvsy/${widget.calendar.id}');
+    Uri uri = Uri.parse('${ApiHost.API_HOST_DEV}/api/v1/anvsy/${widget.anvsy.id}');
     await http.delete(uri, headers: {
       'Authorization': 'Bearer $token',
     });

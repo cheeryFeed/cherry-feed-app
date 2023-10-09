@@ -1,4 +1,4 @@
-import 'package:cherry_feed/screen/connect_feed_screen.dart';
+import 'package:cherry_feed/screen/join/connect_feed_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../models/user/user.dart';

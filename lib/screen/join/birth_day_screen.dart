@@ -2,7 +2,7 @@ import 'package:cherry_feed/appbar/custom_app_bar.dart';
 import 'package:cherry_feed/button/next_button.dart';
 import 'package:cherry_feed/date_dialog.dart';
 import 'package:cherry_feed/models/user/user.dart';
-import 'package:cherry_feed/screen/organization_screen.dart';
+import 'package:cherry_feed/screen/join/organization_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
