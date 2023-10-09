@@ -11,7 +11,7 @@ import 'package:cherry_feed/image/image_container.dart';
 import 'package:cherry_feed/models/calendar/calendar.dart';
 import 'package:cherry_feed/models/calendar/check_list.dart';
 import 'package:cherry_feed/models/plan/plan.dart';
-import 'package:cherry_feed/screen/plan_screen.dart';
+import 'package:cherry_feed/screen/plan/plan_screen.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:cherry_feed/screen/cover_img.dart';
 import 'package:cherry_feed/text_edit/text_editor.dart';
