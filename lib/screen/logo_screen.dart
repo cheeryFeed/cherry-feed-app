@@ -30,7 +30,7 @@ class LogoScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.headline2,
                 ),
               ),
-              SizedBox(height: 200,),
+              SizedBox(height: 50,),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(context,
@@ -47,7 +47,7 @@ class LogoScreen extends StatelessWidget {
                   ),
                 ),
                 child: Container(
-                  height: 400,
+                  height: 300,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage('assets/images/img.png'),

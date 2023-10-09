@@ -4,17 +4,48 @@ import 'package:flutter/material.dart';
 
 class Plan {
   String name;
-  String imagePath;
+  int imagePath;
   Status status;
   String startDate;
   String endDate;
 
   Plan(
-      {required this.name,
+      {
+        required this.name,
         required this.imagePath,
         required this.status,
         required this.startDate,
-        required this.endDate});
+        required this.endDate
+      });
+
+  factory Plan.fromJson(Map<String, dynamic> json) {
+    return Plan(
+      name: json['name'] ?? '',
+      imagePath: json['imgId'] ?? '',
+      status: _parseStatus(json['status']),
+      startDate: json['startDate'] ?? '',
+      endDate: json['endDate'] ?? '',
+    );
+  }
+
+  static Status _parseStatus(String statusString) {
+    switch (statusString) {
+      case 'scheduled':
+        return Status.scheduled;
+      case 'inProgress':
+        return Status.inProgress;
+      case 'completed':
+        return Status.completed;
+      case 'canceled':
+        return Status.canceled;
+      case 'all':
+        return Status.all;
+      default:
+        return Status.all; // 기본값으로 '전체'를 사용할 수도 있습니다.
+    }
+  }
+
+
 
 
 }

@@ -153,7 +153,7 @@ class _Body extends StatelessWidget {
       month: selectedMonth.month,
     );
     return Padding(
-      padding: EdgeInsets.only(top: 10),
+      padding: EdgeInsets.only(top: 6),
       child: Column(
         children: [
           Row(

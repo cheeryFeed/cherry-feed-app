@@ -11,7 +11,7 @@ import 'package:intl/intl.dart';
 class MainAnvsyButton extends StatelessWidget {
   const MainAnvsyButton({Key? key}) : super(key: key);
 
-  Future<List<Anvsy>> _fetchCalendars() async {
+  Future<List<Anvsy>> _fetchAnvsys() async {
     TokenProvider tokenProvider = TokenProvider();
     await tokenProvider.init();
     final token = await tokenProvider.getAccessToken();
@@ -26,17 +26,17 @@ class MainAnvsyButton extends StatelessWidget {
       return data.map((e) => Anvsy.fromJson(e)).toList();
     } else {
       print(response.body);
-      throw Exception('Failed to load calendars');
+      throw Exception('Failed to load anvsys');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return checkCalendar(context);
+    return checkAnvsy(context);
   }
 
 // 기념일이 비었을때 보여줄 화면
-  Widget emptyCalendar(context) {
+  Widget emptyAnvsy(context) {
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -119,10 +119,10 @@ class MainAnvsyButton extends StatelessWidget {
     );
   }
 
-  //기념일이 반별하는 위젯.
-  Widget checkCalendar(context) {
+  //기념일을 판별하는 위젯.
+  Widget checkAnvsy(context) {
     return FutureBuilder<List<Anvsy>>(
-      future: _fetchCalendars(),
+      future: _fetchAnvsys(),
       builder: (BuildContext context, AsyncSnapshot<List<Anvsy>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // 데이터가 로딩 중일 때 표시할 위젯
@@ -137,14 +137,14 @@ class MainAnvsyButton extends StatelessWidget {
           } else if (snapshot.hasError) {
             // 데이터를 가져오는 도중 에러가 발생했을 때 표시할 위젯
             print('Error: ${snapshot.error}');
-            return emptyCalendar(context);
+            return emptyAnvsy(context);
           } else {
             // 데이터가 없을 때 표시할 위젯
-            return emptyCalendar(context);
+            return emptyAnvsy(context);
           }
         } else {
           // 그 외의 상태에 대한 처리
-          return emptyCalendar(context);
+          return emptyAnvsy(context);
         }
       },
     );

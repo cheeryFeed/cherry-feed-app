@@ -59,8 +59,8 @@ class _ConnectFeedScreenState extends State<ConnectFeedScreen> {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $_accessToken'
     };
-    Uri uri = Uri.parse('${ApiHost.API_HOST_DEV}/api/v1/connection');
-    http.Response response = await http.post(uri,headers: headers, body:{'connectCode': connectCode});
+    Uri uri = Uri.parse('${ApiHost.API_HOST_DEV}/api/v1/connection?connectCode=' + connectCode);
+    http.Response response = await http.post(uri,headers: headers);
     print('connectCode : : : ${response.body}');
     return response.body;
   }
@@ -98,7 +98,7 @@ class _ConnectFeedScreenState extends State<ConnectFeedScreen> {
         child: Column(
           children: [
             SizedBox(
-              height: 600,
+              height: 400,
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Column(
@@ -154,9 +154,11 @@ class _ConnectFeedScreenState extends State<ConnectFeedScreen> {
                     SizedBox(
                       child: TextEdit(
                         enabled: true,
-                        textHint:'상대방의 코드를 입력 해 주세요.',
+                        textHint:connectCode ?? '상대방의 코드를 입력 해 주세요.',
                         controller: TextEditingController(),
-                        onChange: (String){},
+                        onChange: (String code){
+                          connectCode = code;
+                        },
                       ),
                     ),
                     SizedBox(height: 100,),

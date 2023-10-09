@@ -30,7 +30,7 @@ class LoginScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline2,
               ),
             ),
-            SizedBox(height: 400),
+            const SizedBox(height: 150),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: const [
